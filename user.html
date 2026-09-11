@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-brand-title="Dashboard Pengguna">Dashboard Pengguna — CEPA</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter','sans-serif'] } } } }</script>
+  <style>
+    .nav-item {
+      width:100%; display:flex; align-items:center; gap:0.75rem;
+      padding:0.625rem 0.75rem; border-radius:0.75rem;
+      font-size:0.875rem; line-height:1.25rem; font-weight:500;
+      color:rgb(148 163 184); background:transparent;
+      border:none; cursor:pointer; text-align:left;
+      transition:color 150ms,background-color 150ms;
+    }
+    .nav-item:hover { color:white; background-color:rgba(51,65,85,0.6); }
+    /* active overrides hover so the blue never flickers on hover */
+    .nav-item.active, .nav-item.active:hover {
+      background-color:rgb(37,99,235);
+      color:white;
+      box-shadow:0 4px 18px rgba(30,58,138,0.45);
+    }
+    .card { background:white; border-radius:1rem; box-shadow:0 1px 3px rgba(0,0,0,.08); border:1px solid rgb(243 244 246); }
+    .btn-primary { display:inline-flex; align-items:center; justify-content:center; gap:0.5rem; padding:0.625rem 1rem; background-color:rgb(37,99,235); color:white; font-size:0.875rem; font-weight:600; border-radius:0.75rem; border:none; cursor:pointer; transition:background-color 200ms,box-shadow 200ms; box-shadow:0 1px 2px rgba(0,0,0,.08); }
+    .btn-primary:hover { background-color:rgb(29,78,216); }
+    .btn-secondary { display:inline-flex; align-items:center; justify-content:center; gap:0.5rem; padding:0.625rem 1rem; border:1px solid rgb(209 213 219); color:rgb(55 65 81); background:white; font-size:0.875rem; font-weight:500; border-radius:0.75rem; cursor:pointer; transition:background-color 200ms; }
+    .btn-secondary:hover { background-color:rgb(249 250 251); }
+    .input-field { width:100%; padding:0.625rem 0.875rem; border:1px solid rgb(209 213 219); border-radius:0.75rem; font-size:0.875rem; outline:none; transition:border-color 150ms,box-shadow 150ms; }
+    .input-field:focus { border-color:rgb(59 130 246); box-shadow:0 0 0 3px rgba(59,130,246,0.15); }
+  </style>
+</head>
+<body class="font-sans bg-gray-50/80 min-h-screen">
+
+<!-- ========== SIDEBAR OVERLAY (mobile) ========== -->
+<div id="sidebarOverlay" class="hidden fixed inset-0 bg-black/60 z-20 lg:hidden backdrop-blur-sm" onclick="closeSidebar()"></div>
+
+<!-- ========== SIDEBAR ========== -->
+<aside id="sidebar" class="fixed left-0 top-0 h-full w-64 bg-slate-900 z-30 flex flex-col -translate-x-full lg:translate-x-0 transition-transform duration-300 shadow-2xl">
+  <!-- Logo -->
+  <div class="p-5 border-b border-slate-700/40">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-lg shadow-blue-900/50 flex-shrink-0">
+        <span data-brand-logo class="text-white"><i class="fas fa-toolbox"></i></span>
+      </div>
+      <div class="min-w-0">
+        <p data-brand-name class="font-bold text-white text-base leading-none">CEPA</p>
+        <p data-brand-tagline class="text-slate-400 text-xs mt-0.5 truncate">Manajemen Peminjaman</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nav -->
+  <nav class="flex-1 p-3 space-y-1 overflow-y-auto">
+    <p class="text-[10px] font-bold tracking-widest text-slate-500 uppercase px-3 pt-3 pb-2">Menu</p>
+    <button onclick="showSection('beranda')"    id="nav-beranda"    class="nav-item active"><i class="fas fa-home w-4 text-center"></i><span>Beranda</span></button>
+    <button onclick="showSection('permintaan')" id="nav-permintaan" class="nav-item"><i class="fas fa-plus-circle w-4 text-center"></i><span>Permintaan Pinjam</span></button>
+    <button onclick="showSection('status')"     id="nav-status"     class="nav-item"><i class="fas fa-clock w-4 text-center"></i><span>Status Peminjaman</span><span id="badge-menunggu" class="hidden ml-auto bg-amber-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">0</span></button>
+    <button onclick="showSection('riwayat')"    id="nav-riwayat"    class="nav-item"><i class="fas fa-history w-4 text-center"></i><span>Riwayat Peminjaman</span></button>
+  </nav>
+
+  <!-- User footer -->
+  <div class="p-3 border-t border-slate-700/40">
+    <div class="flex items-center gap-3 px-2 py-2 mb-1">
+      <div id="sidebarAvatar" class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center flex-shrink-0 text-white text-xs font-bold">U</div>
+      <div class="flex-1 min-w-0">
+        <p id="sidebarName"   class="text-sm font-semibold text-white truncate">—</p>
+        <p id="sidebarDivisi" class="text-xs text-slate-400 truncate">—</p>
+      </div>
+    </div>
+    <button onclick="doLogout()" class="nav-item text-slate-400 hover:text-red-400 hover:bg-red-900/20 mt-1">
+      <i class="fas fa-sign-out-alt w-4 text-center"></i><span>Keluar</span>
+    </button>
+  </div>
+</aside>
+
+<!-- ========== MAIN CONTENT ========== -->
+<div class="lg:ml-64 min-h-screen flex flex-col">
+
+  <!-- Top bar -->
+  <header class="sticky top-0 z-10 bg-white/95 backdrop-blur border-b border-gray-200 shadow-sm">
+    <div class="flex items-center justify-between h-16 px-4 sm:px-6">
+      <div class="flex items-center gap-3">
+        <button onclick="toggleSidebar()" class="lg:hidden p-2 rounded-xl text-gray-500 hover:bg-gray-100 transition">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div>
+          <h2 id="pageTitle"    class="text-base font-bold text-gray-900 leading-none">Beranda</h2>
+          <p  id="pageSubtitle" class="text-xs text-gray-500 mt-0.5">Selamat datang di CEPA</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="hidden sm:block text-right">
+          <p id="headerName" class="text-sm font-semibold text-gray-800">—</p>
+          <p class="text-xs font-medium text-blue-600">Pengguna</p>
+        </div>
+        <div id="headerAvatar" class="w-9 h-9 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">U</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <main class="flex-1 p-4 sm:p-6 max-w-7xl w-full mx-auto">
+
+    <!-- ============================== BERANDA ============================== -->
+    <section id="section-beranda">
+      <div class="mb-6">
+        <h3 class="text-2xl font-extrabold text-gray-900">Selamat Datang, <span id="greetName" class="text-blue-600">—</span>! 👋</h3>
+        <p id="greetDate" class="text-gray-500 text-sm mt-1"></p>
+      </div>
+
+      <!-- Stats cards -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="card p-5 hover:shadow-md transition-shadow">
+          <div class="flex items-center justify-between mb-3">
+            <div class="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center"><i class="fas fa-box-open text-blue-600 text-lg"></i></div>
+          </div>
+          <p id="st-alat" class="text-2xl font-extrabold text-gray-900">—</p>
+          <p class="text-xs text-gray-500 mt-1 font-medium">Jenis Alat Tersedia</p>
+        </div>
+        <div class="card p-5 hover:shadow-md transition-shadow">
+          <div class="flex items-center justify-between mb-3">
+            <div class="w-11 h-11 rounded-xl bg-amber-50 flex items-center justify-center"><i class="fas fa-clock text-amber-600 text-lg"></i></div>
+          </div>
+          <p id="st-menunggu" class="text-2xl font-extrabold text-gray-900">—</p>
+          <p class="text-xs text-gray-500 mt-1 font-medium">Menunggu Persetujuan</p>
+        </div>
+        <div class="card p-5 hover:shadow-md transition-shadow">
+          <div class="flex items-center justify-between mb-3">
+            <div class="w-11 h-11 rounded-xl bg-emerald-50 flex items-center justify-center"><i class="fas fa-check-circle text-emerald-600 text-lg"></i></div>
+          </div>
+          <p id="st-aktif" class="text-2xl font-extrabold text-gray-900">—</p>
+          <p class="text-xs text-gray-500 mt-1 font-medium">Sedang Dipinjam</p>
+        </div>
+        <div class="card p-5 hover:shadow-md transition-shadow">
+          <div class="flex items-center justify-between mb-3">
+            <div class="w-11 h-11 rounded-xl bg-slate-50 flex items-center justify-center"><i class="fas fa-history text-slate-600 text-lg"></i></div>
+          </div>
+          <p id="st-total" class="text-2xl font-extrabold text-gray-900">—</p>
+          <p class="text-xs text-gray-500 mt-1 font-medium">Total Peminjaman</p>
+        </div>
+      </div>
+
+      <!-- Recent activity -->
+      <div class="card overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+          <h4 class="font-bold text-gray-900">Aktivitas Terbaru</h4>
+          <button onclick="showSection('status')" class="text-sm text-blue-600 hover:text-blue-700 font-semibold transition">Lihat Semua →</button>
+        </div>
+        <div id="recentActivity" class="divide-y divide-gray-50 min-h-[80px]">
+          <div class="flex items-center justify-center py-10 text-gray-400 text-sm gap-2">
+            <div class="w-4 h-4 border-2 border-gray-300 border-t-blue-400 rounded-full animate-spin"></div> Memuat...
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================== PERMINTAAN PINJAM ============================== -->
+    <section id="section-permintaan" class="hidden">
+      <div class="mb-6">
+        <h3 class="text-2xl font-extrabold text-gray-900">Permintaan Pinjam</h3>
+        <p class="text-gray-500 text-sm mt-1">Pilih alat yang tersedia untuk dipinjam</p>
+      </div>
+
+      <!-- Filter bar -->
+      <div class="card p-4 mb-5">
+        <div class="flex flex-col sm:flex-row gap-3">
+          <div class="relative flex-1">
+            <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
+            <input type="text" id="searchAlat" placeholder="Cari nama atau kode alat..." oninput="filterAlat()"
+              class="input-field pl-10">
+          </div>
+          <select id="filterKategori" onchange="filterAlat()" class="input-field sm:w-44 bg-white">
+            <option value="">Semua Kategori</option>
+          </select>
+          <select id="filterKondisi" onchange="filterAlat()" class="input-field sm:w-40 bg-white">
+            <option value="">Semua Kondisi</option>
+            <option value="Baik">Baik</option>
+            <option value="Rusak">Rusak</option>
+            <option value="Sedang Diperbaiki">Sedang Diperbaiki</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Summary bar -->
+      <div class="flex items-center justify-between mb-4">
+        <p id="alatCount" class="text-sm text-gray-500 font-medium">Memuat...</p>
+        <button onclick="loadAlat()" class="text-sm text-blue-600 hover:text-blue-700 font-semibold flex items-center gap-1.5 transition">
+          <i class="fas fa-sync-alt text-xs"></i> Refresh
+        </button>
+      </div>
+
+      <!-- Equipment grid -->
+      <div id="alatGrid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div class="col-span-full flex flex-col items-center justify-center py-16 text-gray-400 gap-3">
+          <div class="w-10 h-10 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin"></div>
+          <p class="text-sm">Memuat daftar alat...</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================== STATUS PEMINJAMAN ============================== -->
+    <section id="section-status" class="hidden">
+      <div class="mb-6 flex items-start justify-between gap-4">
+        <div>
+          <h3 class="text-2xl font-extrabold text-gray-900">Status Peminjaman</h3>
+          <p class="text-gray-500 text-sm mt-1">Pantau status permintaan peminjaman Anda</p>
+        </div>
+        <button onclick="loadStatusPeminjaman()" class="btn-secondary text-xs flex-shrink-0">
+          <i class="fas fa-sync-alt"></i> Refresh
+        </button>
+      </div>
+
+      <!-- Tab filter -->
+      <div class="flex gap-1 mb-5 bg-gray-100 rounded-xl p-1 w-fit">
+        <button onclick="filterStatus('all')"        id="tab-all"        class="px-4 py-1.5 rounded-lg text-sm font-semibold bg-white text-blue-700 shadow transition">Semua</button>
+        <button onclick="filterStatus('Menunggu')"   id="tab-Menunggu"   class="px-4 py-1.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition">Menunggu</button>
+        <button onclick="filterStatus('Disetujui')"  id="tab-Disetujui"  class="px-4 py-1.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition">Disetujui</button>
+      </div>
+
+      <div class="card overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead><tr class="bg-gray-50 border-b border-gray-100 text-left">
+              <th class="px-5 py-3.5 font-semibold text-gray-600 text-xs uppercase tracking-wider">ID</th>
+              <th class="px-5 py-3.5 font-semibold text-gray-600 text-xs uppercase tracking-wider">Alat</th>
+              <th class="px-5 py-3.5 font-semibold text-gray-600 text-xs uppercase tracking-wider">Jml</th>
+              <th class="px-5 py-3.5 font-semibold text-gray-600 text-xs uppercase tracking-wider">Tgl Pinjam</th>
+              <th class="px-5 py-3.5 font-semibold text-gray-600 text-xs uppercase tracking-wider">Tgl Kembali</th>
+              <th class="px-5 py-3.5 font-semibold text-gray-600 text-xs uppercase tracking-wider">Status</th>
+              <th class="px-5 py-3.5 font-semibold text-gray-600 text-xs uppercase tracking-wider">Aksi</th>
+            </tr></thead>
+            <tbody id="statusTableBody">
+              <tr><td colspan="7" class="text-center py-12 text-gray-400">
+                <div class="w-8 h-8 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin mx-auto mb-2"></div>
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================== RIWAYAT ============================== -->
+    <section id="section-riwayat" class="hidden">
+      <div class="mb-6 flex items-start justify-between gap-4">
+        <div>
+          <h3 class="text-2xl font-extrabold text-gray-900">Riwayat Peminjaman</h3>
+          <p class="text-gray-500 text-sm mt-1">Riwayat peminjaman yang telah selesai atau ditolak</p>
+        </div>
+        <button onclick="loadRiwayat()" class="btn-secondary text-xs flex-shrink-0">
+          <i class="fas fa-sync-alt"></i> Refresh
+        </button>
+      </div>
+
+      <div class="card overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead><tr class="bg-gray-50 border-b border-gray-100 text-left">
+              <th class="px-5 py-3.5 font-semibold text-gray-600 text-xs uppercase tracking-wider">ID</th>
+              <th class="px-5 py-3.5 font-semibold text-gray-600 text-xs uppercase tracking-wider">Alat</th>
+              <th class="px-5 py-3.5 font-semibold text-gray-600 text-xs uppercase tracking-wider">Jml</th>
+              <th class="px-5 py-3.5 font-semibold text-gray-600 text-xs uppercase tracking-wider">Tgl Pinjam</th>
+              <th class="px-5 py-3.5 font-semibold text-gray-600 text-xs uppercase tracking-wider">Tgl Kembali</th>
+              <th class="px-5 py-3.5 font-semibold text-gray-600 text-xs uppercase tracking-wider">Status</th>
+              <th class="px-5 py-3.5 font-semibold text-gray-600 text-xs uppercase tracking-wider">Ket. Admin</th>
+            </tr></thead>
+            <tbody id="riwayatTableBody">
+              <tr><td colspan="7" class="text-center py-12 text-gray-400">
+                <div class="w-8 h-8 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin mx-auto mb-2"></div>
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+  <footer class="px-6 py-4 text-center text-xs text-gray-400 border-t border-gray-200" data-brand-footer>© 2026 CEPA · Sistem Informasi Manajemen Peminjaman Alat</footer>
+</div>
+
+<!-- ============================== MODAL FORM PEMINJAMAN ============================== -->
+<div id="modal-pinjam" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+    <div class="h-1 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
+    <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+      <div>
+        <h3 class="font-bold text-gray-900">Form Peminjaman Alat</h3>
+        <p class="text-xs text-gray-500 mt-0.5">Isi detail permintaan peminjaman</p>
+      </div>
+      <button onclick="closeModal('modal-pinjam')" class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <!-- Alat info banner -->
+    <div class="mx-5 mt-5 p-4 bg-blue-50 rounded-xl border border-blue-100 flex items-start gap-3">
+      <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center flex-shrink-0">
+        <i class="fas fa-toolbox text-white text-sm"></i>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p id="m-namaAlat"   class="font-bold text-gray-900 text-sm leading-tight">—</p>
+        <p id="m-kodeKategori" class="text-xs text-gray-500 mt-0.5">—</p>
+        <div class="flex items-center gap-4 mt-2 text-xs text-gray-600">
+          <span>Stok: <strong id="m-stok" class="text-blue-700">—</strong></span>
+          <span>Lokasi: <strong id="m-lokasi" class="text-gray-700">—</strong></span>
+          <span>Denda: <strong id="m-denda" class="text-amber-700">—</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <div id="jaminanInfo" class="mx-5 mt-3 p-3 rounded-xl border text-xs flex items-start gap-2">
+      <i class="fas fa-id-card mt-0.5"></i><span>Memeriksa status jaminan identitas...</span>
+    </div>
+
+    <form id="formPinjam" class="px-5 py-4 space-y-4">
+      <input type="hidden" id="f-idAlat">
+      <input type="hidden" id="f-namaAlat">
+
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1.5">Jumlah Pinjam <span class="text-red-500">*</span></label>
+        <input type="number" id="f-jumlah" min="1" required class="input-field" placeholder="Masukkan jumlah unit">
+        <p class="text-xs text-gray-400 mt-1">Maksimal: <span id="f-maxStok" class="font-semibold text-blue-600">—</span> unit</p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1.5">Tanggal Pinjam <span class="text-red-500">*</span></label>
+          <input type="date" id="f-tglPinjam" required class="input-field">
+          <p class="text-xs text-gray-400 mt-1">Min: esok hari</p>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1.5">Tgl Kembali <span class="text-red-500">*</span></label>
+          <input type="date" id="f-tglKembali" required class="input-field">
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1.5">Keperluan / Catatan</label>
+        <textarea id="f-catatan" rows="3" class="input-field resize-none" placeholder="Tuliskan keperluan penggunaan alat..."></textarea>
+      </div>
+
+      <!-- Validation error -->
+      <div id="formError" class="hidden flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-xl text-red-800 text-sm">
+        <i class="fas fa-exclamation-circle text-red-500 mt-0.5 flex-shrink-0"></i>
+        <span id="formErrorText">—</span>
+      </div>
+
+      <div class="flex gap-3 pt-1 pb-1">
+        <button type="button" onclick="closeModal('modal-pinjam')" class="btn-secondary flex-1">Batal</button>
+        <button type="submit" id="btnSubmitPinjam" class="btn-primary flex-1">
+          <i class="fas fa-paper-plane"></i> Kirim Permintaan
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============================== MODAL KONFIRMASI KEMBALIKAN ============================== -->
+<div id="modal-kembali" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
+    <div class="text-center mb-5">
+      <div class="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-3">
+        <i class="fas fa-undo text-blue-600 text-xl"></i>
+      </div>
+      <h3 class="font-bold text-gray-900 text-lg">Kembalikan Alat?</h3>
+      <p class="text-sm text-gray-500 mt-1">Konfirmasi bahwa alat telah dikembalikan ke gudang</p>
+    </div>
+    <div id="kembaliInfo" class="bg-gray-50 rounded-xl p-3 mb-5 text-sm text-gray-700 text-center">—</div>
+    <input type="hidden" id="kembaliId">
+    <div class="flex gap-3">
+      <button onclick="closeModal('modal-kembali')" class="btn-secondary flex-1">Batal</button>
+      <button onclick="doReturn()" id="btnKembali" class="btn-primary flex-1 bg-blue-600">
+        <i class="fas fa-check"></i> Konfirmasi
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast & Loading -->
+<div id="toast-container" class="fixed top-5 right-5 z-[9999] flex flex-col gap-2 max-w-sm w-full pointer-events-none"></div>
+
+<script src="js/config.js"></script>
+<script src="js/utils.js"></script>
+<script>
+// ===== STATE =====
+let currentUser = null;
+let allAlat = [];
+let statusData = [];
+let riwayatData = [];
+let statusFilter = 'all';
+
+// ===== INIT =====
+window.addEventListener('load', async () => {
+  currentUser = Auth.requireAuth('pengguna');
+  if (!currentUser) return;
+  await loadBranding();
+  setupUserUI();
+  await loadBerandaData();
+});
+
+function setupUserUI() {
+  const initial = (currentUser.namaLengkap || currentUser.username)[0].toUpperCase();
+  document.getElementById('sidebarAvatar').textContent = initial;
+  document.getElementById('headerAvatar').textContent  = initial;
+  document.getElementById('sidebarName').textContent   = currentUser.namaLengkap || currentUser.username;
+  document.getElementById('sidebarDivisi').textContent = currentUser.divisi || '—';
+  document.getElementById('headerName').textContent    = currentUser.namaLengkap || currentUser.username;
+  document.getElementById('greetName').textContent     = (currentUser.namaLengkap || currentUser.username).split(' ')[0];
+  document.getElementById('greetDate').textContent     = getCurrentDateIndo();
+}
+
+// ===== NAVIGATION =====
+const navItems = ['beranda','permintaan','status','riwayat'];
+const navTitles = {
+  beranda:    ['Beranda',            'Selamat datang di CEPA'],
+  permintaan: ['Permintaan Pinjam',  'Pilih alat yang tersedia untuk dipinjam'],
+  status:     ['Status Peminjaman',  'Pantau status permintaan peminjaman Anda'],
+  riwayat:    ['Riwayat Peminjaman', 'Riwayat peminjaman yang telah selesai atau ditolak']
+};
+
+function showSection(name) {
+  if (!navTitles[name]) return;
+  navItems.forEach(n => {
+    document.getElementById('section-' + n).classList.add('hidden');
+    document.getElementById('nav-' + n).classList.remove('active');
+  });
+  document.getElementById('section-' + name).classList.remove('hidden');
+  document.getElementById('nav-' + name).classList.add('active');
+  document.getElementById('pageTitle').textContent    = navTitles[name][0];
+  document.getElementById('pageSubtitle').textContent = navTitles[name][1];
+  if (name === 'permintaan' && allAlat.length === 0) loadAlat();
+  if (name === 'status')  loadStatusPeminjaman();
+  if (name === 'riwayat') loadRiwayat();
+  if (window.innerWidth < 1024) closeSidebar();
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('-translate-x-full');
+  document.getElementById('sidebarOverlay').classList.toggle('hidden');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.add('-translate-x-full');
+  document.getElementById('sidebarOverlay').classList.add('hidden');
+}
+function doLogout() {
+  if (confirm('Apakah Anda yakin ingin keluar?')) Auth.logout();
+}
+
+// ===== BERANDA =====
+async function loadBerandaData() {
+  try {
+    const [sRes, rRes, aRes] = await Promise.all([
+      callAPI('getStatusPeminjaman', { username: currentUser.username }),
+      callAPI('getRiwayat',          { username: currentUser.username }),
+      callAPI('getAlat')
+    ]);
+
+    const menunggu    = sRes.success ? sRes.data.filter(d => d.status === 'Menunggu').length  : 0;
+    const aktif       = sRes.success ? sRes.data.filter(d => d.status === 'Disetujui').length : 0;
+    const totalRiwayat= rRes.success ? rRes.data.length : 0;
+    const totalAlat   = aRes.success ? aRes.data.length : 0;
+
+    document.getElementById('st-alat').textContent    = totalAlat;
+    document.getElementById('st-menunggu').textContent = menunggu;
+    document.getElementById('st-aktif').textContent    = aktif;
+    document.getElementById('st-total').textContent    = (sRes.success ? sRes.data.length : 0) + totalRiwayat;
+
+    if (menunggu > 0) {
+      document.getElementById('badge-menunggu').textContent = menunggu;
+      document.getElementById('badge-menunggu').classList.remove('hidden');
+    }
+
+    if (aRes.success) allAlat = aRes.data;
+
+    const all = [
+      ...(sRes.success ? sRes.data : []),
+      ...(rRes.success ? rRes.data : [])
+    ].sort((a,b) => (b.timestamp||'').localeCompare(a.timestamp||''));
+    renderRecentActivity(all.slice(0,6));
+  } catch (e) { console.error(e); }
+}
+
+function renderRecentActivity(items) {
+  const el = document.getElementById('recentActivity');
+  if (!items.length) {
+    el.innerHTML = '<div class="flex flex-col items-center justify-center py-10 text-gray-400 gap-2"><i class="fas fa-inbox text-3xl text-gray-200"></i><p class="text-sm">Belum ada aktivitas</p></div>';
+    return;
+  }
+  const iconMap  = { Menunggu:'fa-clock text-amber-500', Disetujui:'fa-check-circle text-emerald-500', Ditolak:'fa-times-circle text-red-500', Dikembalikan:'fa-undo text-blue-500' };
+  const bgMap    = { Menunggu:'bg-amber-50', Disetujui:'bg-emerald-50', Ditolak:'bg-red-50', Dikembalikan:'bg-blue-50' };
+  el.innerHTML = items.map(item => `
+    <div class="flex items-center gap-4 px-5 py-3.5 hover:bg-gray-50/80 transition">
+      <div class="w-9 h-9 rounded-xl ${bgMap[item.status]||'bg-gray-50'} flex items-center justify-center flex-shrink-0">
+        <i class="fas ${iconMap[item.status]||'fa-circle text-gray-400'}"></i>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="text-sm font-semibold text-gray-900 truncate">${escHtml(item.namaAlat)}</p>
+        <p class="text-xs text-gray-400">${escHtml(item.tanggalPinjam)} &middot; ${escHtml(String(item.jumlah))} unit</p>
+      </div>
+      ${statusBadge(item.status)}
+    </div>
+  `).join('');
+}
+
+// ===== ALAT =====
+async function loadAlat() {
+  document.getElementById('alatGrid').innerHTML = '<div class="col-span-full flex flex-col items-center justify-center py-16 text-gray-400 gap-3"><div class="w-10 h-10 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin"></div><p class="text-sm">Memuat daftar alat...</p></div>';
+  document.getElementById('alatCount').textContent = 'Memuat...';
+  const res = await callAPI('getAlat');
+  if (!res.success) {
+    document.getElementById('alatGrid').innerHTML = '<div class="col-span-full text-center py-12 text-red-400"><i class="fas fa-exclamation-circle text-3xl mb-2 block"></i><p class="text-sm">Gagal memuat data. Coba refresh.</p></div>';
+    return;
+  }
+  allAlat = res.data;
+  const kategori = [...new Set(allAlat.map(a => a.kategori).filter(Boolean))];
+  document.getElementById('filterKategori').innerHTML = '<option value="">Semua Kategori</option>' + kategori.map(k => `<option value="${escHtml(k)}">${escHtml(k)}</option>`).join('');
+  renderAlatGrid(allAlat);
+}
+
+function filterAlat() {
+  const q = document.getElementById('searchAlat').value.toLowerCase();
+  const k = document.getElementById('filterKategori').value;
+  const c = document.getElementById('filterKondisi').value;
+  renderAlatGrid(allAlat.filter(a =>
+    (!q || a.namaAlat.toLowerCase().includes(q) || (a.kodeAlat||'').toLowerCase().includes(q)) &&
+    (!k || a.kategori === k) &&
+    (!c || a.kondisi === c)
+  ));
+}
+
+function renderAlatGrid(items) {
+  const grid = document.getElementById('alatGrid');
+  document.getElementById('alatCount').textContent = `Menampilkan ${items.length} dari ${allAlat.length} alat`;
+  if (!items.length) {
+    grid.innerHTML = '<div class="col-span-full text-center py-12 text-gray-400"><i class="fas fa-search text-3xl mb-2 block text-gray-200"></i><p class="text-sm">Tidak ada alat yang sesuai filter</p></div>';
+    return;
+  }
+  grid.innerHTML = items.map(a => {
+    const habis = parseInt(a.stokTersedia) <= 0 || a.kondisi === 'Rusak' || a.kondisi === 'Sedang Diperbaiki';
+    const rendah = !habis && parseInt(a.stokTersedia) <= 2;
+    const barColor = habis ? 'bg-red-400' : rendah ? 'bg-amber-400' : 'bg-emerald-400';
+    const stokColor = habis ? 'text-red-600' : rendah ? 'text-amber-600' : 'text-emerald-600';
+    const cardData = escHtml(JSON.stringify(a));
+    return `
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:border-blue-200 transition-all duration-200 overflow-hidden group">
+      <div class="h-1.5 ${barColor}"></div>
+      <div class="p-5">
+        <div class="flex items-start justify-between mb-3">
+          <div class="w-12 h-12 rounded-xl bg-slate-100 group-hover:bg-blue-50 flex items-center justify-center transition-colors">
+            <i class="fas fa-tools text-slate-500 group-hover:text-blue-600 text-lg transition-colors"></i>
+          </div>
+          ${kondisiBadge(a.kondisi)}
+        </div>
+        <h4 class="font-bold text-gray-900 text-sm leading-snug mb-1 line-clamp-2">${escHtml(a.namaAlat)}</h4>
+        <p class="text-xs text-gray-400 mb-4">${escHtml(a.kodeAlat)} &middot; ${escHtml(a.kategori)}</p>
+        <div class="flex items-end justify-between mb-4">
+          <div>
+            <p class="text-xs text-gray-500 mb-0.5">Stok Tersedia</p>
+            <p class="text-xl font-extrabold ${stokColor}">${a.stokTersedia} <span class="text-xs font-normal text-gray-400">/ ${a.stokTotal}</span></p>
+          </div>
+          <div class="text-right">
+            <p class="text-xs text-gray-500 mb-0.5">Lokasi</p>
+            <p class="text-xs font-semibold text-gray-700">${escHtml(a.lokasi||'—')}</p>
+          </div>
+        </div>
+        ${habis
+          ? `<button disabled class="w-full py-2.5 rounded-xl bg-gray-100 text-gray-400 text-sm font-semibold cursor-not-allowed">${a.kondisi==='Baik'?'Stok Habis':'Tidak Tersedia'}</button>`
+          : `<button onclick='openFormPinjam(${cardData})' class="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold transition-colors flex items-center justify-center gap-2 shadow-sm shadow-blue-200">
+               <i class="fas fa-hand-holding"></i> Pinjam Sekarang
+             </button>`
+        }
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ===== MODAL PINJAM =====
+function openFormPinjam(alat) {
+  const tomorrow = getTomorrow();
+  const nextWeek = getDateAfterDays(8);
+  document.getElementById('f-idAlat').value       = alat.id;
+  document.getElementById('f-namaAlat').value     = alat.namaAlat;
+  document.getElementById('m-namaAlat').textContent     = alat.namaAlat;
+  document.getElementById('m-kodeKategori').textContent = `${alat.kodeAlat} · ${alat.kategori}`;
+  document.getElementById('m-stok').textContent   = alat.stokTersedia;
+  document.getElementById('m-lokasi').textContent = alat.lokasi || '—';
+  document.getElementById('m-denda').textContent = alat.dendaAktif === 'Tidak' ? 'Tidak aktif' : `Rp ${(Number(alat.dendaPerHari)||0).toLocaleString('id-ID')}/hari`;
+  document.getElementById('f-jumlah').max         = alat.stokTersedia;
+  document.getElementById('f-jumlah').value       = '';
+  document.getElementById('f-maxStok').textContent = alat.stokTersedia;
+  document.getElementById('f-tglPinjam').min      = tomorrow;
+  document.getElementById('f-tglPinjam').value    = tomorrow;
+  document.getElementById('f-tglKembali').min     = tomorrow;
+  document.getElementById('f-tglKembali').value   = nextWeek;
+  document.getElementById('f-catatan').value      = '';
+  document.getElementById('formError').classList.add('hidden');
+  const jaminan = document.getElementById('jaminanInfo');
+  if (currentUser.ktpUrl) {
+    jaminan.className = 'mx-5 mt-3 p-3 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-800 text-xs flex items-start gap-2';
+    jaminan.innerHTML = '<i class="fas fa-check-circle mt-0.5"></i><span>Jaminan identitas terverifikasi. Foto KTP tersimpan pada data pengguna.</span>';
+  } else {
+    jaminan.className = 'mx-5 mt-3 p-3 rounded-xl border border-red-200 bg-red-50 text-red-800 text-xs flex items-start gap-2';
+    jaminan.innerHTML = '<i class="fas fa-exclamation-circle mt-0.5"></i><span>Foto KTP belum tersedia. Permintaan tidak dapat dikirim sebelum admin melengkapi jaminan identitas.</span>';
+  }
+  openModal('modal-pinjam');
+}
+
+document.getElementById('formPinjam').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const idAlat   = document.getElementById('f-idAlat').value;
+  const namaAlat = document.getElementById('f-namaAlat').value;
+  const jumlah   = parseInt(document.getElementById('f-jumlah').value);
+  const tglPinjam  = document.getElementById('f-tglPinjam').value;
+  const tglKembali = document.getElementById('f-tglKembali').value;
+  const catatan  = document.getElementById('f-catatan').value.trim();
+  const maxStok  = parseInt(document.getElementById('f-jumlah').max);
+  const errEl    = document.getElementById('formError');
+  const errTxt   = document.getElementById('formErrorText');
+
+  errEl.classList.add('hidden');
+  if (!currentUser.ktpUrl) { errTxt.textContent = 'Foto KTP belum tersedia. Hubungi admin untuk melengkapi jaminan identitas.'; errEl.classList.remove('hidden'); return; }
+  if (!jumlah || jumlah < 1)    { errTxt.textContent='Jumlah minimal 1 unit'; errEl.classList.remove('hidden'); return; }
+  if (jumlah > maxStok)          { errTxt.textContent=`Melebihi stok (maks ${maxStok})`; errEl.classList.remove('hidden'); return; }
+  if (!tglPinjam)                { errTxt.textContent='Tanggal pinjam wajib diisi'; errEl.classList.remove('hidden'); return; }
+  if (!tglKembali || new Date(tglKembali) <= new Date(tglPinjam)) {
+    errTxt.textContent='Tanggal kembali harus setelah tanggal pinjam'; errEl.classList.remove('hidden'); return;
+  }
+
+  const btn = document.getElementById('btnSubmitPinjam');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Mengirim...';
+
+  const payload = {
+    username: currentUser.username, namaPeminjam: currentUser.namaLengkap,
+    nip: currentUser.nip, divisi: currentUser.divisi,
+    idAlat, namaAlat, jumlah,
+    tanggalPinjam: formatDateForSheet(tglPinjam),
+    tanggalKembaliRencana: formatDateForSheet(tglKembali),
+    catatanPeminjam: catatan
+  };
+
+  const res = await callAPI('createPeminjaman', { data: payload });
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fas fa-paper-plane"></i> Kirim Permintaan';
+
+  if (res.success) {
+    closeModal('modal-pinjam');
+    showToast('Permintaan peminjaman berhasil dikirim ke admin!', 'success');
+    allAlat = [];
+    await loadBerandaData();
+  } else {
+    errTxt.textContent = res.message || 'Gagal mengirim permintaan';
+    errEl.classList.remove('hidden');
+  }
+});
+
+// ===== STATUS =====
+async function loadStatusPeminjaman() {
+  const tbody = document.getElementById('statusTableBody');
+  tbody.innerHTML = '<tr><td colspan="7" class="text-center py-12"><div class="w-8 h-8 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin mx-auto"></div></td></tr>';
+  const res = await callAPI('getStatusPeminjaman', { username: currentUser.username });
+  if (res.success) { statusData = res.data; renderStatusTable(statusData, statusFilter); }
+  else tbody.innerHTML = '<tr><td colspan="7" class="text-center py-10 text-red-400 text-sm">Gagal memuat data</td></tr>';
+}
+
+function filterStatus(f) {
+  statusFilter = f;
+  ['all','Menunggu','Disetujui'].forEach(t => {
+    const el = document.getElementById('tab-' + t);
+    if (t === f) { el.classList.add('bg-white','text-blue-700','shadow'); el.classList.remove('text-gray-600','hover:bg-gray-50'); }
+    else { el.classList.remove('bg-white','text-blue-700','shadow'); el.classList.add('text-gray-600','hover:bg-gray-50'); }
+  });
+  renderStatusTable(statusData, f);
+}
+
+function renderStatusTable(data, f) {
+  const tbody = document.getElementById('statusTableBody');
+  const rows  = f === 'all' ? data : data.filter(d => d.status === f);
+  if (!rows.length) {
+    tbody.innerHTML = '<tr><td colspan="7" class="text-center py-10 text-gray-400 text-sm"><i class="fas fa-inbox text-2xl block mb-2 text-gray-200"></i>Tidak ada data</td></tr>';
+    return;
+  }
+  tbody.innerHTML = rows.map(r => `
+    <tr class="border-b border-gray-50 hover:bg-gray-50/80 transition">
+      <td class="px-5 py-3.5 text-xs font-mono text-gray-400">${escHtml(r.id)}</td>
+      <td class="px-5 py-3.5"><p class="font-semibold text-gray-900 text-sm">${escHtml(r.namaAlat)}</p><p class="text-xs text-gray-400">${escHtml(r.idAlat)}</p></td>
+      <td class="px-5 py-3.5 text-sm text-gray-700 font-medium">${escHtml(String(r.jumlah))} unit</td>
+      <td class="px-5 py-3.5 text-sm text-gray-600">${escHtml(r.tanggalPinjam)}</td>
+      <td class="px-5 py-3.5 text-sm text-gray-600">${escHtml(r.tanggalKembaliRencana)}</td>
+      <td class="px-5 py-3.5">${statusBadge(r.status)}</td>
+      <td class="px-5 py-3.5">
+        ${r.totalDenda > 0 ? `<p class="text-xs font-semibold text-red-600 mb-1">Denda: Rp ${Number(r.totalDenda).toLocaleString('id-ID')}</p>` : ''}
+        ${r.status === 'Disetujui'
+          ? `<button onclick="confirmReturn('${escHtml(r.id)}','${escHtml(r.namaAlat)}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-semibold rounded-lg transition">
+               <i class="fas fa-undo-alt"></i> Kembalikan
+             </button>`
+          : `<span class="text-xs text-gray-400">${escHtml(r.catatanPeminjam||'—')}</span>`
+        }
+      </td>
+    </tr>
+  `).join('');
+}
+
+// ===== RETURN =====
+function confirmReturn(id, namaAlat) {
+  document.getElementById('kembaliId').value = id;
+  document.getElementById('kembaliInfo').textContent = `Kembalikan "${namaAlat}" ke gudang`;
+  openModal('modal-kembali');
+}
+
+async function doReturn() {
+  const id  = document.getElementById('kembaliId').value;
+  const btn = document.getElementById('btnKembali');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Memproses...';
+  const res = await callAPI('returnAlat', { id });
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fas fa-check"></i> Konfirmasi';
+  closeModal('modal-kembali');
+  if (res.success) { showToast(res.fine > 0 ? `Pengembalian tercatat. Denda: Rp ${Number(res.fine).toLocaleString('id-ID')} (${res.lateDays} hari)` : 'Alat berhasil dikembalikan!', res.fine > 0 ? 'warning' : 'success'); await loadStatusPeminjaman(); await loadBerandaData(); }
+  else showToast(res.message || 'Gagal memproses pengembalian', 'error');
+}
+
+// ===== RIWAYAT =====
+async function loadRiwayat() {
+  const tbody = document.getElementById('riwayatTableBody');
+  tbody.innerHTML = '<tr><td colspan="7" class="text-center py-12"><div class="w-8 h-8 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin mx-auto"></div></td></tr>';
+  const res = await callAPI('getRiwayat', { username: currentUser.username });
+  if (!res.success) { tbody.innerHTML = '<tr><td colspan="7" class="text-center py-10 text-red-400 text-sm">Gagal memuat data</td></tr>'; return; }
+  riwayatData = res.data;
+  if (!riwayatData.length) {
+    tbody.innerHTML = '<tr><td colspan="7" class="text-center py-10 text-gray-400 text-sm"><i class="fas fa-inbox text-2xl block mb-2 text-gray-200"></i>Belum ada riwayat</td></tr>';
+    return;
+  }
+  tbody.innerHTML = riwayatData.map(r => `
+    <tr class="border-b border-gray-50 hover:bg-gray-50/80 transition">
+      <td class="px-5 py-3.5 text-xs font-mono text-gray-400">${escHtml(r.id)}</td>
+      <td class="px-5 py-3.5"><p class="font-semibold text-gray-900 text-sm">${escHtml(r.namaAlat)}</p><p class="text-xs text-gray-400">${escHtml(r.idAlat)}</p></td>
+      <td class="px-5 py-3.5 text-sm text-gray-700 font-medium">${escHtml(String(r.jumlah))} unit</td>
+      <td class="px-5 py-3.5 text-sm text-gray-600">${escHtml(r.tanggalPinjam)}</td>
+      <td class="px-5 py-3.5 text-sm text-gray-600">${escHtml(r.tanggalKembaliAktual || r.tanggalKembaliRencana || '—')}</td>
+      <td class="px-5 py-3.5">${statusBadge(r.status)}</td>
+      <td class="px-5 py-3.5 text-xs text-gray-500 max-w-[160px] truncate" title="${escHtml(r.catatanAdmin||'')}">${r.totalDenda > 0 ? `<span class="block text-red-600 font-semibold">Denda: Rp ${Number(r.totalDenda).toLocaleString('id-ID')}</span>` : ''}${escHtml(r.catatanAdmin||'—')}</td>
+    </tr>
+  `).join('');
+}
+</script>
+</body>
+</html>
