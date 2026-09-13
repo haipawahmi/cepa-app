@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title data-brand-title="Dashboard Pengguna">Dashboard Pengguna — CEPA</title>
+  <title data-brand-title="Dashboard Pengguna">Dashboard Pengguna — Cepa App</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -47,7 +47,7 @@
         <span data-brand-logo class="text-white"><i class="fas fa-toolbox"></i></span>
       </div>
       <div class="min-w-0">
-        <p data-brand-name class="font-bold text-white text-base leading-none">CEPA</p>
+        <p data-brand-name class="font-bold text-white text-base leading-none">Cepa App</p>
         <p data-brand-tagline class="text-slate-400 text-xs mt-0.5 truncate">Manajemen Peminjaman</p>
       </div>
     </div>
@@ -60,6 +60,7 @@
     <button onclick="showSection('permintaan')" id="nav-permintaan" class="nav-item"><i class="fas fa-plus-circle w-4 text-center"></i><span>Permintaan Pinjam</span></button>
     <button onclick="showSection('status')"     id="nav-status"     class="nav-item"><i class="fas fa-clock w-4 text-center"></i><span>Status Peminjaman</span><span id="badge-menunggu" class="hidden ml-auto bg-amber-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">0</span></button>
     <button onclick="showSection('riwayat')"    id="nav-riwayat"    class="nav-item"><i class="fas fa-history w-4 text-center"></i><span>Riwayat Peminjaman</span></button>
+    <button onclick="showSection('profil')"      id="nav-profil"      class="nav-item"><i class="fas fa-id-card w-4 text-center"></i><span>Profil &amp; Jaminan</span></button>
   </nav>
 
   <!-- User footer -->
@@ -89,7 +90,7 @@
         </button>
         <div>
           <h2 id="pageTitle"    class="text-base font-bold text-gray-900 leading-none">Beranda</h2>
-          <p  id="pageSubtitle" class="text-xs text-gray-500 mt-0.5">Selamat datang di CEPA</p>
+          <p  id="pageSubtitle" class="text-xs text-gray-500 mt-0.5">Selamat datang di Cepa App</p>
         </div>
       </div>
       <div class="flex items-center gap-3">
@@ -277,8 +278,18 @@
       </div>
     </section>
 
+    <!-- ============================== PROFIL ============================== -->
+    <section id="section-profil" class="hidden">
+      <div class="mb-6"><h3 class="text-2xl font-extrabold text-gray-900">Profil &amp; Jaminan</h3><p class="text-gray-500 text-sm mt-1">Ajukan perubahan foto KTP untuk ditinjau Admin</p></div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <div class="card p-5"><h4 class="font-bold text-gray-900 mb-4">Data Aktif Anda</h4><div class="space-y-3 text-sm"><div><p class="text-xs text-gray-400">Nama</p><p id="profile-name" class="font-semibold text-gray-800">—</p></div><div><p class="text-xs text-gray-400">Username</p><p id="profile-username" class="font-semibold text-gray-800">—</p></div><div><p class="text-xs text-gray-400">Divisi</p><p id="profile-divisi" class="font-semibold text-gray-800">—</p></div><div id="profile-ktp-status" class="p-3 rounded-xl text-xs">Memuat status KTP...</div></div></div>
+        <div class="card p-5"><h4 class="font-bold text-gray-900 mb-4">Ajukan Foto KTP Baru</h4><form id="formProfileChange" class="space-y-4"><input type="file" id="profile-ktp" accept="image/jpeg,image/png,image/webp" class="input-field text-xs" required onchange="previewProfileKtp(this)"><p class="text-xs text-gray-400">JPG, PNG, WEBP maksimal 5 MB. Data lama tetap aktif sampai disetujui Admin.</p><img id="profile-ktp-preview" class="hidden h-32 w-48 object-cover rounded-xl border" alt="Pratinjau KTP"><div id="profile-change-error" class="hidden p-3 bg-red-50 border border-red-200 text-red-800 rounded-xl text-sm"></div><button id="btnProfileChange" class="btn-primary"><i class="fas fa-paper-plane"></i> Ajukan untuk Ditinjau</button></form></div>
+      </div>
+      <div class="card mt-5 overflow-hidden"><div class="px-5 py-4 border-b border-gray-100"><h4 class="font-bold text-gray-900">Riwayat Pengajuan Perubahan</h4></div><div id="profile-change-list" class="divide-y divide-gray-50"><p class="p-5 text-sm text-gray-400">Memuat...</p></div></div>
+    </section>
+
   </main>
-  <footer class="px-6 py-4 text-center text-xs text-gray-400 border-t border-gray-200" data-brand-footer>© 2026 CEPA · Sistem Informasi Manajemen Peminjaman Alat</footer>
+  <footer class="px-6 py-4 text-center text-xs text-gray-400 border-t border-gray-200" data-brand-footer>© 2026 Cepa App · Sistem Informasi Manajemen Peminjaman Alat</footer>
 </div>
 
 <!-- ============================== MODAL FORM PEMINJAMAN ============================== -->
@@ -413,12 +424,13 @@ function setupUserUI() {
 }
 
 // ===== NAVIGATION =====
-const navItems = ['beranda','permintaan','status','riwayat'];
+const navItems = ['beranda','permintaan','status','riwayat','profil'];
 const navTitles = {
-  beranda:    ['Beranda',            'Selamat datang di CEPA'],
+  beranda:    ['Beranda',            'Selamat datang di Cepa App'],
   permintaan: ['Permintaan Pinjam',  'Pilih alat yang tersedia untuk dipinjam'],
   status:     ['Status Peminjaman',  'Pantau status permintaan peminjaman Anda'],
   riwayat:    ['Riwayat Peminjaman', 'Riwayat peminjaman yang telah selesai atau ditolak']
+  ,profil:    ['Profil & Jaminan',   'Kelola pengajuan perubahan identitas']
 };
 
 function showSection(name) {
@@ -434,8 +446,26 @@ function showSection(name) {
   if (name === 'permintaan' && allAlat.length === 0) loadAlat();
   if (name === 'status')  loadStatusPeminjaman();
   if (name === 'riwayat') loadRiwayat();
+  if (name === 'profil') loadProfileSection();
   if (window.innerWidth < 1024) closeSidebar();
 }
+
+async function loadProfileSection() {
+  document.getElementById('profile-name').textContent = currentUser.namaLengkap || '—';
+  document.getElementById('profile-username').textContent = currentUser.username || '—';
+  document.getElementById('profile-divisi').textContent = currentUser.divisi || '—';
+  const status = document.getElementById('profile-ktp-status');
+  status.className = `p-3 rounded-xl text-xs ${currentUser.ktpUrl ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'}`;
+  status.innerHTML = currentUser.ktpUrl ? '<i class="fas fa-check-circle mr-1"></i>KTP aktif dan telah diverifikasi.' : '<i class="fas fa-exclamation-circle mr-1"></i>KTP belum tersedia.';
+  const res = await callAPI('getProfileChanges', { username: currentUser.username });
+  const list = document.getElementById('profile-change-list');
+  if (!res.success || !res.data.length) { list.innerHTML = '<p class="p-5 text-sm text-gray-400">Belum ada pengajuan perubahan.</p>'; return; }
+  list.innerHTML = res.data.map(row => `<div class="px-5 py-3 flex items-center justify-between gap-3"><div><p class="text-sm font-semibold text-gray-800">${escHtml(row.jenis)} · ${escHtml(row.waktuPengajuan)}</p><p class="text-xs text-gray-400">${escHtml(row.catatanAdmin || 'Menunggu pemeriksaan Admin')}</p></div>${statusBadge(row.status)}</div>`).join('');
+}
+
+function previewProfileKtp(input) { const file=input.files?.[0]; if (!file) return; if (file.size > 5*1024*1024) { input.value=''; showToast('Ukuran foto maksimal 5 MB','error'); return; } const preview=document.getElementById('profile-ktp-preview'); preview.src=URL.createObjectURL(file); preview.classList.remove('hidden'); }
+function readProfileKtp() { const file=document.getElementById('profile-ktp').files[0]; if(!file)return Promise.resolve(''); return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(file);}); }
+document.getElementById('formProfileChange').addEventListener('submit', async e => { e.preventDefault(); const error=document.getElementById('profile-change-error'); error.classList.add('hidden'); const btn=document.getElementById('btnProfileChange'); const ktpData=await readProfileKtp(); btn.disabled=true; btn.innerHTML='<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Mengirim...'; const res=await callAPI('submitProfileChange',{data:{username:currentUser.username,ktpData}}); btn.disabled=false; btn.innerHTML='<i class="fas fa-paper-plane"></i> Ajukan untuk Ditinjau'; if(res.success){document.getElementById('profile-ktp').value='';document.getElementById('profile-ktp-preview').classList.add('hidden');showToast(res.message,'success');loadProfileSection();}else{error.textContent=res.message;error.classList.remove('hidden');} });
 
 function toggleSidebar() {
   document.getElementById('sidebar').classList.toggle('-translate-x-full');
