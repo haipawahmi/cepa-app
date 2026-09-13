@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title data-brand-title="Dashboard Admin">Dashboard Admin — CEPA</title>
+  <title data-brand-title="Dashboard Admin">Dashboard Admin — Cepa App</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -55,7 +55,7 @@
         <span data-brand-logo class="text-white"><i class="fas fa-toolbox"></i></span>
       </div>
       <div class="min-w-0">
-        <p data-brand-name class="font-bold text-white text-base leading-none">CEPA</p>
+        <p data-brand-name class="font-bold text-white text-base leading-none">Cepa App</p>
         <p data-brand-tagline class="text-slate-400 text-xs mt-0.5">Panel Administrator</p>
       </div>
     </div>
@@ -67,6 +67,7 @@
     <button onclick="showSection('alat')"        id="nav-alat"        class="nav-item"><i class="fas fa-toolbox w-4 text-center"></i><span>Kelola Alat</span></button>
     <button onclick="showSection('pengguna')"    id="nav-pengguna"    class="nav-item"><i class="fas fa-users w-4 text-center"></i><span>Kelola Pengguna</span></button>
     <button onclick="showSection('laporan')"     id="nav-laporan"     class="nav-item"><i class="fas fa-chart-bar w-4 text-center"></i><span>Laporan</span></button>
+    <button onclick="showSection('persetujuan')" id="nav-persetujuan" class="nav-item"><i class="fas fa-user-check w-4 text-center"></i><span>Persetujuan Data</span><span id="badge-changes" class="hidden ml-auto bg-amber-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">0</span></button>
     <button onclick="showSection('pengaturan')"  id="nav-pengaturan"  class="nav-item"><i class="fas fa-palette w-4 text-center"></i><span>Pengaturan Tampilan</span></button>
   </nav>
   <div class="p-3 border-t border-slate-700/40">
@@ -181,9 +182,10 @@
           <h3 class="text-2xl font-extrabold text-gray-900">Kelola Permintaan</h3>
           <p class="text-gray-500 text-sm mt-1">Setujui atau tolak permintaan peminjaman alat</p>
         </div>
-        <button onclick="loadPermintaan(activePermintaanTab)" class="btn-secondary text-xs flex-shrink-0">
-          <i class="fas fa-sync-alt"></i> Refresh
-        </button>
+        <div class="flex gap-2 flex-shrink-0">
+          <button onclick="loadPermintaan(activePermintaanTab)" class="btn-secondary text-xs"><i class="fas fa-sync-alt"></i> Refresh</button>
+          <button onclick="openAdminRequestModal()" class="btn-primary text-xs"><i class="fas fa-plus"></i> Buat Permintaan</button>
+        </div>
       </div>
 
       <!-- Tabs -->
@@ -329,7 +331,7 @@
         <div class="card p-5 xl:col-span-2">
           <form id="formPengaturan" class="space-y-5">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div><label class="block text-sm font-semibold text-gray-700 mb-1.5">Nama Aplikasi</label><input id="set-appName" class="input-field" placeholder="CEPA" required></div>
+              <div><label class="block text-sm font-semibold text-gray-700 mb-1.5">Nama Aplikasi</label><input id="set-appName" class="input-field" placeholder="Cepa App" required></div>
               <div><label class="block text-sm font-semibold text-gray-700 mb-1.5">Nama Perusahaan / Instansi</label><input id="set-company" class="input-field" placeholder="Nama instansi"></div>
             </div>
             <div><label class="block text-sm font-semibold text-gray-700 mb-1.5">Tagline / Deskripsi Singkat</label><input id="set-tagline" class="input-field" placeholder="Sistem Informasi Manajemen Peminjaman Alat"></div>
@@ -357,13 +359,15 @@
         <div class="card p-5 h-fit">
           <p class="text-xs uppercase tracking-wider text-gray-400 font-bold mb-3">Preview Header</p>
           <div class="rounded-xl overflow-hidden border border-gray-200 shadow-sm">
-            <div class="bg-slate-900 p-4 flex items-center gap-3"><div id="previewLogo" class="w-10 h-10 rounded-xl bg-blue-600 text-white grid place-items-center"><i class="fas fa-toolbox"></i></div><div><p id="previewName" class="font-bold text-white">CEPA</p><p id="previewTagline" class="text-xs text-slate-400">Panel Administrator</p></div></div>
+            <div class="bg-slate-900 p-4 flex items-center gap-3"><div id="previewLogo" class="w-10 h-10 rounded-xl bg-blue-600 text-white grid place-items-center"><i class="fas fa-toolbox"></i></div><div><p id="previewName" class="font-bold text-white">Cepa App</p><p id="previewTagline" class="text-xs text-slate-400">Panel Administrator</p></div></div>
             <div class="p-5 bg-gray-50"><p class="text-xs text-gray-400">Preview warna utama dan identitas aplikasi</p><div id="previewAccent" class="h-2 rounded-full bg-blue-600 mt-4"></div></div>
           </div>
           <p class="text-xs text-gray-400 mt-4 leading-relaxed">Pengaturan yang sama akan digunakan pada login, dashboard Admin, dashboard Pengguna, dan footer aplikasi.</p>
         </div>
       </div>
     </section>
+
+    <section id="section-persetujuan" class="hidden"><div class="mb-6 flex items-start justify-between gap-4"><div><h3 class="text-2xl font-extrabold text-gray-900">Persetujuan Data</h3><p class="text-gray-500 text-sm mt-1">Tinjau perubahan KTP dan data pengguna sebelum diterapkan</p></div><button onclick="loadProfileChangesAdmin()" class="btn-secondary text-xs"><i class="fas fa-sync-alt"></i> Refresh</button></div><div class="card overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-sm"><thead><tr class="bg-gray-50 border-b border-gray-100"><th class="th">ID</th><th class="th">Pengguna</th><th class="th">Jenis</th><th class="th">Diajukan</th><th class="th">Status</th><th class="th">Aksi</th></tr></thead><tbody id="profileChangesBody"><tr><td colspan="6" class="text-center py-12"><div class="w-8 h-8 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin mx-auto"></div></td></tr></tbody></table></div></div></section>
 
     <!-- ============================== LAPORAN ============================== -->
     <section id="section-laporan" class="hidden">
@@ -430,7 +434,7 @@
       </div>
     </section>
   </main>
-  <footer class="px-6 py-4 text-center text-xs text-gray-400 border-t border-gray-200" data-brand-footer>© 2026 CEPA · Sistem Informasi Manajemen Peminjaman Alat</footer>
+  <footer class="px-6 py-4 text-center text-xs text-gray-400 border-t border-gray-200" data-brand-footer>© 2026 Cepa App · Sistem Informasi Manajemen Peminjaman Alat</footer>
 </div>
 
 <!-- ============================== MODAL: APPROVE/REJECT ============================== -->
@@ -675,6 +679,26 @@
   </div>
 </div>
 
+<!-- ============================== MODAL: ADMIN BUAT PERMINTAAN ============================== -->
+<div id="modal-admin-request" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden max-h-[92vh] overflow-y-auto">
+    <div class="h-1 bg-gradient-to-r from-blue-600 to-indigo-500"></div>
+    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-10">
+      <div><h3 class="font-bold text-gray-900">Buat Permintaan untuk Pengguna</h3><p class="text-xs text-gray-500 mt-0.5">Admin dapat membuat pengajuan atas nama pengguna terverifikasi</p></div>
+      <button onclick="closeModal('modal-admin-request')" class="w-8 h-8 rounded-lg text-gray-400 hover:bg-gray-100"><i class="fas fa-times"></i></button>
+    </div>
+    <form id="formAdminRequest" class="px-6 py-5 space-y-4">
+      <div><label class="block text-sm font-semibold text-gray-700 mb-1.5">Pengguna <span class="text-red-500">*</span></label><select id="ar-user" class="input-field bg-white" required><option value="">Pilih pengguna</option></select><p id="ar-user-hint" class="text-xs mt-1 text-gray-400">Hanya pengguna dengan KTP tersimpan yang dapat dipilih.</p></div>
+      <div><label class="block text-sm font-semibold text-gray-700 mb-1.5">Alat <span class="text-red-500">*</span></label><select id="ar-alat" class="input-field bg-white" required><option value="">Pilih alat</option></select><p id="ar-stok" class="text-xs mt-1 text-gray-400">—</p></div>
+      <div class="grid grid-cols-3 gap-3"><div><label class="block text-xs font-semibold text-gray-600 mb-1.5">Jumlah</label><input type="number" id="ar-jumlah" min="1" value="1" class="input-field" required></div><div><label class="block text-xs font-semibold text-gray-600 mb-1.5">Tanggal Pinjam</label><input type="date" id="ar-tglPinjam" class="input-field" required></div><div><label class="block text-xs font-semibold text-gray-600 mb-1.5">Tanggal Kembali</label><input type="date" id="ar-tglKembali" class="input-field" required></div></div>
+      <div class="p-3 bg-amber-50 border border-amber-100 rounded-xl text-xs text-amber-800"><i class="fas fa-info-circle mr-1"></i><span id="ar-denda">Tarif denda alat akan ditampilkan di sini.</span></div>
+      <div><label class="block text-sm font-semibold text-gray-700 mb-1.5">Catatan / Keperluan</label><textarea id="ar-catatan" rows="3" class="input-field resize-none" placeholder="Keperluan peminjaman..."></textarea></div>
+      <div id="ar-error" class="hidden p-3 bg-red-50 border border-red-200 text-red-800 rounded-xl text-sm"></div>
+      <div class="flex gap-3"><button type="button" onclick="closeModal('modal-admin-request')" class="btn-secondary flex-1">Batal</button><button id="btnAdminRequest" class="btn-primary flex-1"><i class="fas fa-paper-plane"></i> Kirim Permintaan</button></div>
+    </form>
+  </div>
+</div>
+
 <!-- ============================== MODAL: DETAIL LAPORAN ============================== -->
 <div id="modal-detail-laporan" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 items-center justify-center p-4">
   <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden max-h-[92vh] overflow-y-auto">
@@ -741,11 +765,12 @@ const navTitles = {
   alat:       ['Kelola Alat',       'Manajemen inventaris alat perusahaan'],
   pengguna:   ['Kelola Pengguna',   'Manajemen akun admin dan pengguna'],
   pengaturan: ['Pengaturan Tampilan','Identitas, logo, warna, dan footer aplikasi'],
+  persetujuan:['Persetujuan Data',  'Tinjau perubahan data pengguna'],
   laporan:    ['Laporan',           'Seluruh riwayat transaksi peminjaman']
 };
 
 function showSection(name) {
-  const sections = ['dashboard','permintaan','alat','pengguna','pengaturan','laporan'];
+  const sections = ['dashboard','permintaan','alat','pengguna','pengaturan','laporan','persetujuan'];
   if (!sections.includes(name)) return;
   sections.forEach(n => {
     document.getElementById('section-'+n).classList.add('hidden');
@@ -759,12 +784,16 @@ function showSection(name) {
   if (name === 'alat')       loadAlatAdmin();
   if (name === 'pengguna')   loadPengguna();
   if (name === 'pengaturan') fillSettingsForm(currentBranding);
+  if (name === 'persetujuan') loadProfileChangesAdmin();
   if (name === 'laporan')    loadLaporan();
   if (window.innerWidth < 1024) closeSidebar();
 }
 
+async function loadProfileChangesAdmin() { const body=document.getElementById('profileChangesBody'); body.innerHTML='<tr><td colspan="6" class="text-center py-10"><div class="w-8 h-8 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin mx-auto"></div></td></tr>'; const res=await callAPI('getProfileChanges'); if(!res.success){body.innerHTML='<tr><td colspan="6" class="text-center py-10 text-red-500">Gagal memuat pengajuan</td></tr>';return;} const pending=res.data.filter(x=>x.status==='Menunggu'); const badge=document.getElementById('badge-changes'); if(pending.length){badge.textContent=pending.length;badge.classList.remove('hidden')}else badge.classList.add('hidden'); if(!res.data.length){body.innerHTML='<tr><td colspan="6" class="text-center py-10 text-gray-400">Belum ada pengajuan</td></tr>';return;} body.innerHTML=res.data.map(x=>`<tr class="border-b border-gray-50"><td class="td text-xs font-mono">${escHtml(x.id)}</td><td class="td"><p class="font-semibold">${escHtml(x.namaPengguna)}</p><p class="text-xs text-gray-400">${escHtml(x.username)}</p></td><td class="td">${escHtml(x.jenis)} ${x.ktpUrl?`<a href="${escHtml(x.ktpUrl)}" target="_blank" class="text-indigo-600 text-xs font-bold ml-2"><i class="fas fa-external-link-alt"></i> Lihat</a>`:''}</td><td class="td text-xs text-gray-500">${escHtml(x.waktuPengajuan)}</td><td class="td">${statusBadge(x.status)}</td><td class="td">${x.status==='Menunggu'?`<div class="flex gap-1"><button onclick="reviewProfile('${escHtml(x.id)}','Disetujui')" class="btn-success"><i class="fas fa-check"></i> Setujui</button><button onclick="reviewProfile('${escHtml(x.id)}','Ditolak')" class="btn-danger"><i class="fas fa-times"></i> Tolak</button></div>`:`<span class="text-xs text-gray-400">${escHtml(x.catatanAdmin||'—')}</span>`}</td></tr>`).join(''); }
+async function reviewProfile(id,status){const catatan=status==='Ditolak'?prompt('Alasan penolakan:')||'Ditolak oleh Admin':'';const res=await callAPI('reviewProfileChange',{id,status,catatan,admin:currentUser.namaLengkap});if(res.success){showToast(res.message,'success');loadProfileChangesAdmin();loadPengguna();}else showToast(res.message||'Gagal memproses','error');}
+
 function fillSettingsForm(settings = {}) {
-  const values = { appName:'CEPA', tagline:'Sistem Informasi Manajemen Peminjaman Alat', company:'', footer:'', logoMode:'icon', logoIcon:'fa-toolbox', primaryColor:'#2563eb', ...settings };
+  const values = { appName:'Cepa App', tagline:'Sistem Informasi Manajemen Peminjaman Alat', company:'', footer:'', logoMode:'icon', logoIcon:'fa-toolbox', primaryColor:'#2563eb', ...settings };
   ['appName','tagline','company','footer','logoIcon'].forEach(key => { const el = document.getElementById('set-'+key); if (el) el.value = values[key] || ''; });
   const color = values.primaryColor || '#2563eb';
   document.getElementById('set-primaryColor').value = color;
@@ -775,7 +804,7 @@ function fillSettingsForm(settings = {}) {
 }
 
 function updateSettingsPreview(values) {
-  const name = values.appName || document.getElementById('set-appName')?.value || 'CEPA';
+  const name = values.appName || document.getElementById('set-appName')?.value || 'Cepa App';
   const tagline = values.tagline || document.getElementById('set-tagline')?.value || 'Panel Administrator';
   const color = values.primaryColor || document.getElementById('set-primaryColorText')?.value || '#2563eb';
   document.getElementById('previewName').textContent = name;
@@ -928,6 +957,57 @@ async function loadPermintaan(tab) {
     </tr>
   `).join('');
 }
+
+async function openAdminRequestModal() {
+  if (!allPengguna.length) await loadPengguna();
+  if (!allAlatAdmin.length) await loadAlatAdmin();
+  const userSelect = document.getElementById('ar-user');
+  const alatSelect = document.getElementById('ar-alat');
+  userSelect.innerHTML = '<option value="">Pilih pengguna</option>' + allPengguna.filter(u => u.role !== 'admin' && u.status === 'Aktif').map(u => `<option value="${escHtml(u.id)}">${escHtml(u.namaLengkap)} · ${escHtml(u.username)}${u.ktpUrl ? '' : ' · KTP belum ada'}</option>`).join('');
+  alatSelect.innerHTML = '<option value="">Pilih alat</option>' + allAlatAdmin.filter(a => Number(a.stokTersedia) > 0 && a.kondisi === 'Baik').map(a => `<option value="${escHtml(a.id)}">${escHtml(a.namaAlat)} · stok ${escHtml(String(a.stokTersedia))}</option>`).join('');
+  const tomorrow = getTomorrow();
+  document.getElementById('ar-tglPinjam').min = tomorrow; document.getElementById('ar-tglPinjam').value = tomorrow;
+  document.getElementById('ar-tglKembali').min = tomorrow; document.getElementById('ar-tglKembali').value = getDateAfterDays(8);
+  document.getElementById('ar-jumlah').value = 1; document.getElementById('ar-catatan').value = '';
+  document.getElementById('ar-error').classList.add('hidden');
+  updateAdminRequestHints();
+  openModal('modal-admin-request');
+}
+
+function updateAdminRequestHints() {
+  const user = allPengguna.find(u => u.id === document.getElementById('ar-user').value);
+  const alat = allAlatAdmin.find(a => a.id === document.getElementById('ar-alat').value);
+  const userHint = document.getElementById('ar-user-hint');
+  const stokHint = document.getElementById('ar-stok');
+  const dendaHint = document.getElementById('ar-denda');
+  userHint.textContent = user ? (user.ktpUrl ? 'KTP terverifikasi dan tersimpan.' : 'KTP belum tersedia — pengguna tidak dapat mengajukan.') : 'Hanya pengguna dengan KTP tersimpan yang dapat dipilih.';
+  userHint.className = 'text-xs mt-1 ' + (user?.ktpUrl ? 'text-emerald-600' : 'text-amber-600');
+  stokHint.textContent = alat ? `Stok tersedia: ${alat.stokTersedia} unit` : '—';
+  dendaHint.textContent = alat ? (alat.dendaAktif === 'Tidak' ? 'Denda alat ini tidak aktif.' : `Denda keterlambatan: Rp ${(Number(alat.dendaPerHari)||0).toLocaleString('id-ID')} per hari.`) : 'Tarif denda alat akan ditampilkan di sini.';
+  if (alat) document.getElementById('ar-jumlah').max = alat.stokTersedia;
+}
+
+document.getElementById('ar-user').addEventListener('change', updateAdminRequestHints);
+document.getElementById('ar-alat').addEventListener('change', updateAdminRequestHints);
+
+document.getElementById('formAdminRequest').addEventListener('submit', async e => {
+  e.preventDefault();
+  const error = document.getElementById('ar-error'); error.classList.add('hidden');
+  const user = allPengguna.find(u => u.id === document.getElementById('ar-user').value);
+  const alat = allAlatAdmin.find(a => a.id === document.getElementById('ar-alat').value);
+  const jumlah = Number(document.getElementById('ar-jumlah').value);
+  const tglPinjam = document.getElementById('ar-tglPinjam').value;
+  const tglKembali = document.getElementById('ar-tglKembali').value;
+  if (!user || !user.ktpUrl) { error.textContent = 'Pilih pengguna aktif yang sudah memiliki foto KTP.'; error.classList.remove('hidden'); return; }
+  if (!alat || jumlah < 1 || jumlah > Number(alat.stokTersedia)) { error.textContent = 'Alat atau jumlah tidak valid.'; error.classList.remove('hidden'); return; }
+  if (!tglPinjam || !tglKembali || tglKembali <= tglPinjam) { error.textContent = 'Tanggal kembali harus setelah tanggal pinjam.'; error.classList.remove('hidden'); return; }
+  const btn = document.getElementById('btnAdminRequest'); btn.disabled = true; btn.innerHTML = '<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Mengirim...';
+  const payload = { username:user.username, namaPeminjam:user.namaLengkap, nip:user.nip, divisi:user.divisi, idAlat:alat.id, namaAlat:alat.namaAlat, jumlah, tanggalPinjam:formatDateForSheet(tglPinjam), tanggalKembaliRencana:formatDateForSheet(tglKembali), catatanPeminjam:document.getElementById('ar-catatan').value.trim() };
+  const result = await callAPI('createPeminjaman', { data:payload });
+  btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Kirim Permintaan';
+  if (result.success) { closeModal('modal-admin-request'); showToast('Permintaan berhasil dibuat untuk ' + user.namaLengkap, 'success'); allAlatAdmin = []; await loadPermintaan(activePermintaanTab); }
+  else { error.textContent = result.message || 'Gagal membuat permintaan'; error.classList.remove('hidden'); }
+});
 
 // Action Modal
 function openActionModal(id, type) {
@@ -1144,7 +1224,7 @@ function filterPengguna() {
   const r = document.getElementById('filterRolePengguna').value;
   renderPenggunaTable(allPengguna.filter(u =>
     (!q || u.namaLengkap.toLowerCase().includes(q) || u.username.toLowerCase().includes(q) || (u.divisi||'').toLowerCase().includes(q)) &&
-    (!r || (r === 'pengguna' ? u.role === 'pengguna' || u.role === 'user' : u.role === r))
+    (!r || (r === 'pengguna' ? u.role === 'pengguna' || u.role === 'pegawai' : u.role === r))
   ));
 }
 
@@ -1421,7 +1501,7 @@ function exportCSV(selectedRow) {
   ].join('\n');
   const a  = document.createElement('a');
   a.href   = 'data:text/csv;charset=utf-8,' + encodeURIComponent('\uFEFF' + csvContent);
-  a.download = `CEPA_Laporan_${new Date().toISOString().slice(0,10)}.csv`;
+  a.download = `Cepa_Laporan_${new Date().toISOString().slice(0,10)}.csv`;
   a.click();
   showToast(`${rows.length} data berhasil diekspor`, 'success');
 }
@@ -1459,7 +1539,7 @@ function exportExcel(selectedRow) {
   const worksheet = XLSX.utils.json_to_sheet(data);
   worksheet['!cols'] = [{ wch: 14 }, { wch: 18 }, { wch: 24 }, { wch: 14 }, { wch: 16 }, { wch: 28 }, { wch: 9 }, { wch: 16 }, { wch: 18 }, { wch: 16 }, { wch: 16 }, { wch: 28 }, { wch: 28 }, { wch: 22 }, { wch: 22 }];
   XLSX.utils.book_append_sheet(workbook, worksheet, 'Laporan Peminjaman');
-  XLSX.writeFile(workbook, `CEPA_Laporan_${new Date().toISOString().slice(0,10)}.xlsx`);
+  XLSX.writeFile(workbook, `Cepa_Laporan_${new Date().toISOString().slice(0,10)}.xlsx`);
   showToast(`${rows.length} data berhasil diekspor ke Excel`, 'success');
 }
 
@@ -1488,7 +1568,7 @@ function exportPDF(selectedRow) {
     y += 10;
   });
   pdf.setFontSize(7); pdf.setTextColor(148, 163, 184); pdf.text(`Dicetak ${getCurrentDateIndo()}`, margin, 202);
-  pdf.save(`CEPA_Laporan_${new Date().toISOString().slice(0,10)}.pdf`);
+  pdf.save(`Cepa_Laporan_${new Date().toISOString().slice(0,10)}.pdf`);
   showToast(`${rows.length} data berhasil diekspor ke PDF`, 'success');
 }
 
@@ -1499,20 +1579,20 @@ function exportKartuPDF(selectedRow) {
   const { jsPDF } = window.jspdf;
   const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   rows.forEach((row, index) => { if (index > 0) pdf.addPage(); drawLoanCard(pdf, row); });
-  pdf.save(`CEPA_Kartu_Peminjaman_${new Date().toISOString().slice(0,10)}.pdf`);
+  pdf.save(`Cepa_Kartu_Peminjaman_${new Date().toISOString().slice(0,10)}.pdf`);
   showToast(`${rows.length} kartu berhasil dibuat dalam PDF`, 'success');
 }
 
 function drawPdfHeader(pdf, title, subtitle) {
   pdf.setFillColor(15, 23, 42); pdf.rect(0, 0, 297, 25, 'F');
-  pdf.setTextColor(255, 255, 255); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(16); pdf.text('CEPA', 12, 11);
+  pdf.setTextColor(255, 255, 255); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(16); pdf.text('Cepa App', 12, 11);
   pdf.setFont('helvetica', 'normal'); pdf.setFontSize(8); pdf.text(title, 12, 18); pdf.text(subtitle, 250, 18);
 }
 
 function drawLoanCard(pdf, row) {
   pdf.setFillColor(248, 250, 252); pdf.rect(0, 0, 210, 297, 'F');
   pdf.setFillColor(15, 23, 42); pdf.rect(0, 0, 210, 34, 'F');
-  pdf.setTextColor(255, 255, 255); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(22); pdf.text('CEPA', 18, 16);
+  pdf.setTextColor(255, 255, 255); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(22); pdf.text('Cepa App', 18, 16);
   pdf.setFont('helvetica', 'normal'); pdf.setFontSize(9); pdf.text('KARTU PEMINJAMAN ALAT', 18, 25);
   pdf.setFillColor(37, 99, 235); pdf.roundedRect(148, 10, 44, 13, 3, 3, 'F');
   pdf.setFont('helvetica', 'bold'); pdf.setFontSize(8); pdf.text(String(row.status || '-'), 170, 18, { align: 'center' });
