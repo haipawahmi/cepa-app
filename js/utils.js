@@ -1,5 +1,5 @@
 // =====================================================
-// CEPA - Shared Utilities
+// Cepa App - Shared Utilities
 // =====================================================
 
 // ===== API HELPER =====
@@ -79,7 +79,7 @@ const Auth = {
     const user = this.getUser();
     if (!user) { window.location.href = 'index.html'; return null; }
     const roleAllowed = role === 'pengguna'
-      ? user.role === 'pengguna' || user.role === 'user'
+      ? user.role === 'pengguna' || user.role === 'pegawai'
       : !role || user.role === role;
     if (!roleAllowed) {
       window.location.href = user.role === 'admin' ? 'admin.html' : 'user.html';
