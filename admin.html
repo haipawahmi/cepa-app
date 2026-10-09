@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title data-brand-title="Dashboard Admin">Dashboard Admin — Cepa App</title>
+  <title data-brand-title="Dashboard Admin">Dashboard Admin — CEPA</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -51,12 +51,12 @@
 <aside id="sidebar" class="fixed left-0 top-0 h-full w-64 bg-slate-900 z-30 flex flex-col -translate-x-full lg:translate-x-0 transition-transform duration-300 shadow-2xl">
   <div class="p-5 border-b border-slate-700/40">
     <div class="flex items-center gap-3">
-      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-lg shadow-blue-900/50 flex-shrink-0">
-        <span data-brand-logo class="text-white"><i class="fas fa-toolbox"></i></span>
+      <div class="w-10 h-10 rounded-xl bg-white text-slate-900 flex items-center justify-center shadow-lg flex-shrink-0">
+        <span data-brand-logo class="text-sm font-black tracking-widest">CP</span>
       </div>
       <div class="min-w-0">
-        <p data-brand-name class="font-bold text-white text-base leading-none">Cepa App</p>
-        <p data-brand-tagline class="text-slate-400 text-xs mt-0.5">Panel Administrator</p>
+        <p data-brand-name class="font-black text-white text-base leading-none tracking-widest">CEPA</p>
+        <p data-brand-tagline class="text-slate-500 text-[10px] mt-0.5">Panel Administrator</p>
       </div>
     </div>
   </div>
@@ -72,10 +72,10 @@
   </nav>
   <div class="p-3 border-t border-slate-700/40">
     <div class="flex items-center gap-3 px-2 py-2 mb-1">
-      <div id="sidebarAvatar" class="w-8 h-8 rounded-full bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center flex-shrink-0 text-white text-xs font-bold">A</div>
+      <div id="sidebarAvatar" class="w-8 h-8 rounded-full bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center flex-shrink-0 text-white text-[11px] font-bold tracking-wide">CP</div>
       <div class="flex-1 min-w-0">
-        <p id="sidebarName" class="text-sm font-semibold text-white truncate">Admin</p>
-        <p class="text-xs text-amber-400 font-medium">Administrator</p>
+        <p id="sidebarName" class="text-sm font-semibold text-white truncate">—</p>
+        <p id="sidebarRole" class="text-xs text-slate-400 font-medium">Administrator</p>
       </div>
     </div>
     <button onclick="doLogout()" class="nav-item text-slate-400 hover:text-red-400 hover:bg-red-900/20 mt-1">
@@ -99,11 +99,11 @@
         </div>
       </div>
       <div class="flex items-center gap-3">
-        <div class="hidden sm:block text-right">
-          <p id="headerName" class="text-sm font-semibold text-gray-800">Admin</p>
-          <p class="text-xs font-bold text-amber-600">Administrator</p>
+        <div class="hidden sm:block text-right min-w-0 max-w-[200px]">
+          <p id="headerName" class="text-sm font-semibold text-gray-800 truncate">—</p>
+          <p id="headerRole" class="text-xs font-medium text-gray-500">Administrator</p>
         </div>
-        <div id="headerAvatar" class="w-9 h-9 rounded-full bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">A</div>
+        <div id="headerAvatar" class="w-9 h-9 rounded-full bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center text-white text-xs font-bold tracking-wide flex-shrink-0">CP</div>
       </div>
     </div>
   </header>
@@ -232,17 +232,20 @@
         </button>
       </div>
 
-      <!-- Search alat admin -->
-      <div class="card p-4 mb-5">
+      <!-- Search + group by category -->
+      <div class="card p-4 mb-5 space-y-3">
         <div class="flex flex-col sm:flex-row gap-3">
           <div class="relative flex-1">
             <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
             <input type="text" id="searchAlatAdmin" placeholder="Cari nama atau kode alat..." oninput="filterAlatAdmin()" class="input-field pl-10">
           </div>
+          <select id="filterKategoriAdmin" onchange="filterAlatAdmin()" class="input-field sm:w-44 bg-white"><option value="">Semua Kategori</option></select>
+          <label class="inline-flex items-center gap-2 text-xs font-semibold text-gray-600 whitespace-nowrap"><input type="checkbox" id="groupKategori" onchange="filterAlatAdmin()" class="rounded"> Kelompokkan kategori</label>
           <button onclick="loadAlatAdmin()" class="btn-secondary">
             <i class="fas fa-sync-alt"></i> Refresh
           </button>
         </div>
+        <div id="kategoriChips" class="flex flex-wrap gap-2"></div>
       </div>
 
       <div class="card overflow-hidden">
@@ -331,10 +334,11 @@
         <div class="card p-5 xl:col-span-2">
           <form id="formPengaturan" class="space-y-5">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div><label class="block text-sm font-semibold text-gray-700 mb-1.5">Nama Aplikasi</label><input id="set-appName" class="input-field" placeholder="Cepa App" required></div>
+              <div><label class="block text-sm font-semibold text-gray-700 mb-1.5">Nama Aplikasi</label><input id="set-appName" class="input-field" placeholder="CEPA" required></div>
               <div><label class="block text-sm font-semibold text-gray-700 mb-1.5">Nama Perusahaan / Instansi</label><input id="set-company" class="input-field" placeholder="Nama instansi"></div>
             </div>
             <div><label class="block text-sm font-semibold text-gray-700 mb-1.5">Tagline / Deskripsi Singkat</label><input id="set-tagline" class="input-field" placeholder="Sistem Informasi Manajemen Peminjaman Alat"></div>
+            <div><label for="set-storeAddress" class="block text-sm font-semibold text-gray-700 mb-1.5">Alamat Toko (Footer)</label><textarea id="set-storeAddress" rows="2" class="input-field resize-none" placeholder="Matang Segarau, Kec. Tekarang, Kabupaten Sambas, Kalimantan Barat 79468" required></textarea></div>
             <div><label class="block text-sm font-semibold text-gray-700 mb-1.5">Teks Footer</label><input id="set-footer" class="input-field" placeholder="© 2026 Nama Aplikasi"></div>
             <div class="p-4 bg-gray-50 border border-gray-200 rounded-xl">
               <p class="text-sm font-bold text-gray-800 mb-3">Logo Header</p>
@@ -357,10 +361,11 @@
           </form>
         </div>
         <div class="card p-5 h-fit">
-          <p class="text-xs uppercase tracking-wider text-gray-400 font-bold mb-3">Preview Header</p>
+          <p class="text-xs uppercase tracking-wider text-gray-400 font-bold mb-3">Preview Tampilan</p>
           <div class="rounded-xl overflow-hidden border border-gray-200 shadow-sm">
-            <div class="bg-slate-900 p-4 flex items-center gap-3"><div id="previewLogo" class="w-10 h-10 rounded-xl bg-blue-600 text-white grid place-items-center"><i class="fas fa-toolbox"></i></div><div><p id="previewName" class="font-bold text-white">Cepa App</p><p id="previewTagline" class="text-xs text-slate-400">Panel Administrator</p></div></div>
+            <div class="bg-slate-900 p-4 flex items-center gap-3"><div id="previewLogo" class="w-10 h-10 shrink-0 rounded-xl bg-white text-slate-900 grid place-items-center font-black text-xs tracking-widest">CP</div><div class="min-w-0"><p id="previewName" class="font-bold text-white">CEPA</p><p id="previewTagline" class="text-xs text-slate-500">Panel Administrator</p></div></div>
             <div class="p-5 bg-gray-50"><p class="text-xs text-gray-400">Preview warna utama dan identitas aplikasi</p><div id="previewAccent" class="h-2 rounded-full bg-blue-600 mt-4"></div></div>
+            <footer class="p-4 border-t border-gray-200 text-center text-xs text-gray-500 leading-relaxed"><p id="previewFooter"></p><p id="previewAddress" class="mt-1">Matang Segarau, Kec. Tekarang, Kabupaten Sambas, Kalimantan Barat 79468</p></footer>
           </div>
           <p class="text-xs text-gray-400 mt-4 leading-relaxed">Pengaturan yang sama akan digunakan pada login, dashboard Admin, dashboard Pengguna, dan footer aplikasi.</p>
         </div>
@@ -434,7 +439,7 @@
       </div>
     </section>
   </main>
-  <footer class="px-6 py-4 text-center text-xs text-gray-400 border-t border-gray-200" data-brand-footer>© 2026 Cepa App · Sistem Informasi Manajemen Peminjaman Alat</footer>
+  <footer class="px-6 py-4 text-center text-xs text-gray-400 border-t border-gray-200 leading-relaxed"><span data-brand-footer>© 2026 CEPA · Sistem Informasi Manajemen Peminjaman Alat</span><span data-store-address class="block mt-1 text-[11px]">Matang Segarau, Kec. Tekarang, Kabupaten Sambas, Kalimantan Barat 79468</span></footer>
 </div>
 
 <!-- ============================== MODAL: APPROVE/REJECT ============================== -->
@@ -497,6 +502,17 @@
     </div>
     <form id="formAlat" class="px-6 py-5 space-y-4">
       <input type="hidden" id="fa-id">
+      <div>
+        <label for="fa-foto" class="block text-sm font-semibold text-gray-700 mb-1.5">Foto Alat</label>
+        <div class="flex items-start gap-3">
+          <div id="fa-foto-preview" class="shrink-0"></div>
+          <div class="min-w-0 flex-1">
+            <input type="file" id="fa-foto" accept="image/jpeg,image/png,image/webp" class="input-field text-xs bg-white" onchange="previewAlatPhoto(this)">
+            <p class="text-xs text-gray-500 mt-1.5">JPG, PNG, atau WEBP. Maksimal 2 MB.</p>
+            <button type="button" id="fa-foto-remove" onclick="removeAlatPhoto()" class="hidden mt-2 w-8 h-8 inline-flex items-center justify-center rounded-lg text-red-600 hover:bg-red-50" title="Hapus foto alat" aria-label="Hapus foto alat"><i class="fas fa-trash-alt"></i></button>
+          </div>
+        </div>
+      </div>
       <div class="grid grid-cols-2 gap-4">
         <div>
           <label class="block text-sm font-semibold text-gray-700 mb-1.5">Kode Alat <span class="text-red-500">*</span></label>
@@ -624,6 +640,12 @@
           <input type="tel" id="fp-telepon" class="input-field" placeholder="08xxxxxxxxxx">
         </div>
       </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div><label class="block text-xs font-semibold text-gray-600 mb-1.5">NIK (16 digit)</label><input id="fp-nik" maxlength="16" inputmode="numeric" class="input-field" placeholder="3201xxxxxxxxxxxx"></div>
+        <div><label class="block text-xs font-semibold text-gray-600 mb-1.5">Tanggal Lahir</label><input id="fp-tgl" type="date" class="input-field"></div>
+      </div>
+      <div><label class="block text-xs font-semibold text-gray-600 mb-1.5">Jenis Kelamin</label><select id="fp-gender" class="input-field bg-white"><option value="">Pilih</option><option value="Laki-laki">Laki-laki</option><option value="Perempuan">Perempuan</option></select></div>
+      <div><label class="block text-sm font-semibold text-gray-700 mb-1.5">Alamat Lengkap</label><textarea id="fp-alamat" rows="2" class="input-field resize-none" placeholder="Jalan, RT/RW, desa/kelurahan, kecamatan, kabupaten/kota"></textarea></div>
       <div class="p-3 bg-blue-50 border border-blue-100 rounded-xl">
         <label class="block text-sm font-semibold text-gray-700 mb-1.5">Jaminan Identitas: Foto KTP</label>
         <input type="file" id="fp-ktp" accept="image/jpeg,image/png,image/webp" class="input-field bg-white text-xs" onchange="previewKtp(this)">
@@ -747,11 +769,17 @@ const penggunaCache     = {};
 window.addEventListener('load', async () => {
   currentUser = Auth.requireAuth('admin');
   if (!currentUser) return;
-  const initial = (currentUser.namaLengkap || 'A')[0].toUpperCase();
+  const displayName = currentUser.namaLengkap?.trim() || currentUser.username || 'Pengguna';
+  const roleLabel = currentUser.role === 'admin' ? 'Administrator' : 'Pengguna';
+  const initial = displayName[0].toUpperCase();
   document.getElementById('sidebarAvatar').textContent = initial;
   document.getElementById('headerAvatar').textContent  = initial;
-  document.getElementById('sidebarName').textContent   = currentUser.namaLengkap || 'Admin';
-  document.getElementById('headerName').textContent    = currentUser.namaLengkap || 'Admin';
+  ['sidebarName', 'headerName'].forEach(id => {
+    document.getElementById(id).textContent = displayName;
+    document.getElementById(id).title = displayName;
+  });
+  document.getElementById('sidebarRole').textContent = roleLabel;
+  document.getElementById('headerRole').textContent = roleLabel;
   document.getElementById('dashDate').textContent      = getCurrentDateIndo();
   currentBranding = await loadBranding();
   fillSettingsForm(currentBranding);
@@ -789,12 +817,24 @@ function showSection(name) {
   if (window.innerWidth < 1024) closeSidebar();
 }
 
-async function loadProfileChangesAdmin() { const body=document.getElementById('profileChangesBody'); body.innerHTML='<tr><td colspan="6" class="text-center py-10"><div class="w-8 h-8 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin mx-auto"></div></td></tr>'; const res=await callAPI('getProfileChanges'); if(!res.success){body.innerHTML='<tr><td colspan="6" class="text-center py-10 text-red-500">Gagal memuat pengajuan</td></tr>';return;} const pending=res.data.filter(x=>x.status==='Menunggu'); const badge=document.getElementById('badge-changes'); if(pending.length){badge.textContent=pending.length;badge.classList.remove('hidden')}else badge.classList.add('hidden'); if(!res.data.length){body.innerHTML='<tr><td colspan="6" class="text-center py-10 text-gray-400">Belum ada pengajuan</td></tr>';return;} body.innerHTML=res.data.map(x=>`<tr class="border-b border-gray-50"><td class="td text-xs font-mono">${escHtml(x.id)}</td><td class="td"><p class="font-semibold">${escHtml(x.namaPengguna)}</p><p class="text-xs text-gray-400">${escHtml(x.username)}</p></td><td class="td">${escHtml(x.jenis)} ${x.ktpUrl?`<a href="${escHtml(x.ktpUrl)}" target="_blank" class="text-indigo-600 text-xs font-bold ml-2"><i class="fas fa-external-link-alt"></i> Lihat</a>`:''}</td><td class="td text-xs text-gray-500">${escHtml(x.waktuPengajuan)}</td><td class="td">${statusBadge(x.status)}</td><td class="td">${x.status==='Menunggu'?`<div class="flex gap-1"><button onclick="reviewProfile('${escHtml(x.id)}','Disetujui')" class="btn-success"><i class="fas fa-check"></i> Setujui</button><button onclick="reviewProfile('${escHtml(x.id)}','Ditolak')" class="btn-danger"><i class="fas fa-times"></i> Tolak</button></div>`:`<span class="text-xs text-gray-400">${escHtml(x.catatanAdmin||'—')}</span>`}</td></tr>`).join(''); }
+async function loadProfileChangesAdmin() {
+  const body=document.getElementById('profileChangesBody');
+  body.innerHTML='<tr><td colspan="6" class="text-center py-10"><div class="w-8 h-8 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin mx-auto"></div></td></tr>';
+  const res=await callAPI('getProfileChanges');
+  if(!res.success){body.innerHTML='<tr><td colspan="6" class="text-center py-10 text-red-500">Gagal memuat pengajuan</td></tr>';return;}
+  const pending=res.data.filter(x=>x.status==='Menunggu');
+  const badge=document.getElementById('badge-changes'); if(pending.length){badge.textContent=pending.length;badge.classList.remove('hidden')}else badge.classList.add('hidden');
+  if(!res.data.length){body.innerHTML='<tr><td colspan="6" class="text-center py-10 text-gray-400">Belum ada pengajuan</td></tr>';return;}
+  body.innerHTML=res.data.map(x=>{
+    const detail = [x.nik?`NIK ${escHtml(x.nik)}`:'', x.alamat?escHtml(x.alamat):'', x.tanggalLahir||x.jenisKelamin?`${escHtml(x.tanggalLahir||'')} ${x.tanggalLahir&&x.jenisKelamin?'· ':''}${escHtml(x.jenisKelamin||'')}`:'', x.telepon||x.email?`${escHtml(x.telepon||'')}${x.telepon&&x.email?' · ':''}${escHtml(x.email||'')}`:''].filter(Boolean).join(' · ');
+    return `<tr class="border-b border-gray-50"><td class="td text-xs font-mono">${escHtml(x.id)}</td><td class="td"><p class="font-semibold">${escHtml(x.namaPengguna)}</p><p class="text-xs text-gray-400">${escHtml(x.username)}</p></td><td class="td"><p class="text-xs font-bold">${escHtml(x.jenis)}</p><p class="text-xs text-gray-500 mt-1">${detail||''}</p>${x.ktpUrl?`<a href="${escHtml(x.ktpUrl)}" target="_blank" class="text-indigo-600 text-xs font-bold"><i class="fas fa-external-link-alt"></i> Lihat KTP</a>`:''}</td><td class="td text-xs text-gray-500">${escHtml(x.waktuPengajuan)}</td><td class="td">${statusBadge(x.status)}</td><td class="td">${x.status==='Menunggu'?`<div class="flex gap-1"><button onclick="reviewProfile('${escHtml(x.id)}','Disetujui')" class="btn-success"><i class="fas fa-check"></i> Setujui</button><button onclick="reviewProfile('${escHtml(x.id)}','Ditolak')" class="btn-danger"><i class="fas fa-times"></i> Tolak</button></div>`:`<span class="text-xs text-gray-400">${escHtml(x.catatanAdmin||'—')}</span>`}</td></tr>`;
+  }).join('');
+}
 async function reviewProfile(id,status){const catatan=status==='Ditolak'?prompt('Alasan penolakan:')||'Ditolak oleh Admin':'';const res=await callAPI('reviewProfileChange',{id,status,catatan,admin:currentUser.namaLengkap});if(res.success){showToast(res.message,'success');loadProfileChangesAdmin();loadPengguna();}else showToast(res.message||'Gagal memproses','error');}
 
 function fillSettingsForm(settings = {}) {
-  const values = { appName:'Cepa App', tagline:'Sistem Informasi Manajemen Peminjaman Alat', company:'', footer:'', logoMode:'icon', logoIcon:'fa-toolbox', primaryColor:'#2563eb', ...settings };
-  ['appName','tagline','company','footer','logoIcon'].forEach(key => { const el = document.getElementById('set-'+key); if (el) el.value = values[key] || ''; });
+  const values = { appName:'CEPA', tagline:'Sistem Informasi Manajemen Peminjaman Alat', company:'Toko CEPA', footer:'© 2026 CEPA · Sistem Informasi Manajemen Peminjaman Alat', storeAddress:CONFIG.STORE_ADDRESS, logoMode:'text', logoIcon:'fa-store', primaryColor:'#2563eb', ...settings };
+  ['appName','tagline','company','footer','storeAddress','logoIcon'].forEach(key => { const el = document.getElementById('set-'+key); if (el) el.value = values[key] || ''; });
   const color = values.primaryColor || '#2563eb';
   document.getElementById('set-primaryColor').value = color;
   document.getElementById('set-primaryColorText').value = color;
@@ -804,22 +844,25 @@ function fillSettingsForm(settings = {}) {
 }
 
 function updateSettingsPreview(values) {
-  const name = values.appName || document.getElementById('set-appName')?.value || 'Cepa App';
+  const name = values.appName || document.getElementById('set-appName')?.value || 'CEPA';
   const tagline = values.tagline || document.getElementById('set-tagline')?.value || 'Panel Administrator';
+  const storeAddress = values.storeAddress || document.getElementById('set-storeAddress')?.value || '';
   const color = values.primaryColor || document.getElementById('set-primaryColorText')?.value || '#2563eb';
   document.getElementById('previewName').textContent = name;
+  document.getElementById('previewAddress').textContent = storeAddress;
+  document.getElementById('previewFooter').textContent = values.footer ?? document.getElementById('set-footer').value;
   document.getElementById('previewTagline').textContent = tagline;
   document.getElementById('previewAccent').style.backgroundColor = color;
   const logo = document.getElementById('previewLogo');
   if (values.logoMode === 'image' && values.logoData) logo.innerHTML = `<img src="${escHtml(values.logoData)}" class="w-full h-full object-contain rounded-xl" alt="Logo">`;
-  else if (values.logoMode === 'text') logo.textContent = name.slice(0,2).toUpperCase();
-  else logo.innerHTML = `<i class="fas ${escHtml(values.logoIcon || 'fa-toolbox')}"></i>`;
+   else if (values.logoMode === 'text') { const short = /cepa/i.test(name) ? 'CP' : (name.length<=4? name.toUpperCase(): name.slice(0,2).toUpperCase()); logo.textContent = short; logo.className='w-10 h-10 rounded-xl bg-white text-slate-900 grid place-items-center font-black text-xs tracking-widest'; }
+  else { logo.className='w-10 h-10 rounded-xl bg-blue-600 text-white grid place-items-center'; logo.innerHTML = `<i class="fas ${escHtml(values.logoIcon || 'fa-store')}"></i>`; }
 }
 
 document.querySelectorAll('input[name="logoMode"]').forEach(input => input.addEventListener('change', () => updateSettingsPreview({ logoMode: input.value, logoIcon: document.getElementById('set-logoIcon').value })));
 document.getElementById('set-primaryColor')?.addEventListener('input', e => { document.getElementById('set-primaryColorText').value = e.target.value; updateSettingsPreview({ primaryColor:e.target.value }); });
 document.getElementById('set-primaryColorText')?.addEventListener('input', e => { document.getElementById('set-primaryColor').value = e.target.value; updateSettingsPreview({ primaryColor:e.target.value }); });
-['set-appName','set-tagline','set-logoIcon'].forEach(id => document.getElementById(id)?.addEventListener('input', () => updateSettingsPreview({ appName:document.getElementById('set-appName').value, tagline:document.getElementById('set-tagline').value, logoIcon:document.getElementById('set-logoIcon').value, logoMode:document.querySelector('input[name="logoMode"]:checked').value })));
+['set-appName','set-tagline','set-storeAddress','set-footer','set-logoIcon'].forEach(id => document.getElementById(id)?.addEventListener('input', () => updateSettingsPreview({ appName:document.getElementById('set-appName').value, tagline:document.getElementById('set-tagline').value, storeAddress:document.getElementById('set-storeAddress').value, logoIcon:document.getElementById('set-logoIcon').value, logoMode:document.querySelector('input[name="logoMode"]:checked').value })));
 
 function readBrandLogo() {
   const file = document.getElementById('set-logoFile').files[0];
@@ -834,11 +877,12 @@ document.getElementById('formPengaturan').addEventListener('submit', async e => 
   const btn = document.getElementById('btnSavePengaturan');
   try {
     const logoData = await readBrandLogo();
-    const payload = { appName:document.getElementById('set-appName').value.trim(), tagline:document.getElementById('set-tagline').value.trim(), company:document.getElementById('set-company').value.trim(), footer:document.getElementById('set-footer').value.trim(), logoMode:document.querySelector('input[name="logoMode"]:checked').value, logoIcon:document.getElementById('set-logoIcon').value.trim(), primaryColor:document.getElementById('set-primaryColorText').value.trim(), ...(logoData ? {logoData} : {}) };
+    const payload = { appName:document.getElementById('set-appName').value.trim(), tagline:document.getElementById('set-tagline').value.trim(), company:document.getElementById('set-company').value.trim(), footer:document.getElementById('set-footer').value.trim(), storeAddress:document.getElementById('set-storeAddress').value.trim(), logoMode:document.querySelector('input[name="logoMode"]:checked').value, logoIcon:document.getElementById('set-logoIcon').value.trim(), primaryColor:document.getElementById('set-primaryColorText').value.trim(), ...(logoData ? {logoData} : {}) };
     if (!payload.appName) throw new Error('Nama aplikasi wajib diisi');
     btn.disabled = true; btn.innerHTML = '<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Menyimpan...';
     const result = await callAPI('updateSettings', { data:payload });
     if (!result.success) throw new Error(result.message || 'Gagal menyimpan pengaturan');
+    if (result.data?.storeAddress !== payload.storeAddress) throw new Error('Alamat belum tersimpan. Perbarui deployment Apps Script ke versi terbaru, lalu simpan kembali.');
     currentBranding = result.data; applyBranding(currentBranding); fillSettingsForm(currentBranding); showToast('Pengaturan tampilan berhasil disimpan', 'success');
   } catch (err) { error.textContent = err.message; error.classList.remove('hidden'); }
   btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> Simpan Pengaturan';
@@ -980,8 +1024,8 @@ function updateAdminRequestHints() {
   const userHint = document.getElementById('ar-user-hint');
   const stokHint = document.getElementById('ar-stok');
   const dendaHint = document.getElementById('ar-denda');
-  userHint.textContent = user ? (user.ktpUrl ? 'KTP terverifikasi dan tersimpan.' : 'KTP belum tersedia — pengguna tidak dapat mengajukan.') : 'Hanya pengguna dengan KTP tersimpan yang dapat dipilih.';
-  userHint.className = 'text-xs mt-1 ' + (user?.ktpUrl ? 'text-emerald-600' : 'text-amber-600');
+  userHint.textContent = user ? (user.ktpUrl ? 'KTP terverifikasi dan tersimpan.' : 'Foto KTP belum ada — tetap dapat mengajukan (KTP opsional).') : 'Pilih pengguna aktif (KTP opsional).';
+  userHint.className = 'text-xs mt-1 ' + (user?.ktpUrl ? 'text-emerald-600' : 'text-blue-600');
   stokHint.textContent = alat ? `Stok tersedia: ${alat.stokTersedia} unit` : '—';
   dendaHint.textContent = alat ? (alat.dendaAktif === 'Tidak' ? 'Denda alat ini tidak aktif.' : `Denda keterlambatan: Rp ${(Number(alat.dendaPerHari)||0).toLocaleString('id-ID')} per hari.`) : 'Tarif denda alat akan ditampilkan di sini.';
   if (alat) document.getElementById('ar-jumlah').max = alat.stokTersedia;
@@ -998,7 +1042,7 @@ document.getElementById('formAdminRequest').addEventListener('submit', async e =
   const jumlah = Number(document.getElementById('ar-jumlah').value);
   const tglPinjam = document.getElementById('ar-tglPinjam').value;
   const tglKembali = document.getElementById('ar-tglKembali').value;
-  if (!user || !user.ktpUrl) { error.textContent = 'Pilih pengguna aktif yang sudah memiliki foto KTP.'; error.classList.remove('hidden'); return; }
+  if (!user) { error.textContent = 'Pilih pengguna aktif.'; error.classList.remove('hidden'); return; }
   if (!alat || jumlah < 1 || jumlah > Number(alat.stokTersedia)) { error.textContent = 'Alat atau jumlah tidak valid.'; error.classList.remove('hidden'); return; }
   if (!tglPinjam || !tglKembali || tglKembali <= tglPinjam) { error.textContent = 'Tanggal kembali harus setelah tanggal pinjam.'; error.classList.remove('hidden'); return; }
   const btn = document.getElementById('btnAdminRequest'); btn.disabled = true; btn.innerHTML = '<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Mengirim...';
@@ -1087,23 +1131,26 @@ async function loadAlatAdmin() {
   if (!res.success) { tbody.innerHTML = '<tr><td colspan="9" class="text-center py-10 text-red-400 text-sm">Gagal memuat data</td></tr>'; return; }
   allAlatAdmin = res.data;
   allAlatAdmin.forEach(a => { alatCache[a.id] = a; });
+  const cats = [...new Set(allAlatAdmin.map(a=>a.kategori).filter(Boolean))].sort();
+  document.getElementById('filterKategoriAdmin').innerHTML = '<option value="">Semua Kategori</option>' + cats.map(c=>`<option value="${escHtml(c)}">${escHtml(c)}</option>`).join('');
+  document.getElementById('kategoriChips').innerHTML = cats.map(c=>{
+    const count = allAlatAdmin.filter(a=>a.kategori===c).length;
+    return `<button onclick="document.getElementById('filterKategoriAdmin').value='${escHtml(c)}';filterAlatAdmin()" class="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-xs font-semibold text-slate-700">${escHtml(c)} · ${count}</button>`;
+  }).join('');
   renderAlatTable(allAlatAdmin);
 }
 
 function filterAlatAdmin() {
   const q = document.getElementById('searchAlatAdmin').value.toLowerCase();
-  renderAlatTable(allAlatAdmin.filter(a => !q || a.namaAlat.toLowerCase().includes(q) || (a.kodeAlat||'').toLowerCase().includes(q)));
+  const k = document.getElementById('filterKategoriAdmin').value;
+  const filtered = allAlatAdmin.filter(a => (!q || a.namaAlat.toLowerCase().includes(q) || (a.kodeAlat||'').toLowerCase().includes(q) || (a.kategori||'').toLowerCase().includes(q)) && (!k || a.kategori===k));
+  renderAlatTable(filtered);
 }
 
-function renderAlatTable(items) {
-  const tbody = document.getElementById('alatTableBody');
-  if (!items.length) {
-    tbody.innerHTML = '<tr><td colspan="9" class="text-center py-10 text-gray-400 text-sm"><i class="fas fa-inbox text-2xl block mb-2 text-gray-200"></i>Tidak ada alat</td></tr>'; return;
-  }
-  tbody.innerHTML = items.map(a => `
-    <tr class="border-b border-gray-50 hover:bg-gray-50/80 transition">
-      <td class="td text-xs font-mono font-semibold text-gray-600">${escHtml(a.kodeAlat)}</td>
-      <td class="td"><p class="font-semibold text-gray-900 text-sm">${escHtml(a.namaAlat)}</p><p class="text-xs text-gray-400">${escHtml(a.id)}</p></td>
+function rowAlatHtml(a){
+  return `<tr class="border-b border-gray-50 hover:bg-gray-50/80 transition">
+      <td class="td text-xs font-mono font-semibold text-gray-600 whitespace-nowrap">${escHtml(a.kodeAlat)}</td>
+      <td class="td"><div class="flex items-center gap-3 min-w-[220px]">${alatPhotoHtml(a)}<div class="min-w-0"><p class="font-semibold text-gray-900 text-sm">${escHtml(a.namaAlat)}</p><p class="text-xs text-gray-400">${escHtml(a.id)}</p></div></div></td>
       <td class="td text-sm text-gray-600">${escHtml(a.kategori)}</td>
       <td class="td text-sm font-semibold text-gray-900">${escHtml(String(a.stokTotal))}</td>
       <td class="td">
@@ -1119,11 +1166,85 @@ function renderAlatTable(items) {
           <button onclick="openHapusModal('${escHtml(a.id)}','${escHtml(a.namaAlat)}')" class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 text-xs font-bold rounded-lg transition"><i class="fas fa-trash-alt"></i></button>
         </div>
       </td>
-    </tr>
-  `).join('');
+    </tr>`;
+}
+
+function renderAlatTable(items) {
+  const tbody = document.getElementById('alatTableBody');
+  if (!items.length) {
+    tbody.innerHTML = '<tr><td colspan="9" class="text-center py-10 text-gray-400 text-sm"><i class="fas fa-inbox text-2xl block mb-2 text-gray-200"></i>Tidak ada alat</td></tr>'; return;
+  }
+  const grouped = document.getElementById('groupKategori')?.checked;
+  if (grouped) {
+    const cats = [...new Set(items.map(a=>a.kategori||'Tanpa Kategori'))].sort();
+    tbody.innerHTML = cats.map(cat=>{
+      const rows = items.filter(a=>(a.kategori||'Tanpa Kategori')===cat);
+      return `<tr class="bg-slate-900"><td colspan="9" class="px-4 py-2 text-xs font-black tracking-widest text-white uppercase">${escHtml(cat)} · ${rows.length} alat</td></tr>` + rows.map(rowAlatHtml).join('');
+    }).join('');
+  } else {
+    tbody.innerHTML = items.map(rowAlatHtml).join('');
+  }
+}
+
+let alatPhotoRemoved = false;
+let alatPhotoPreviewUrl = '';
+
+function resetAlatPhoto(fotoUrl = '') {
+  if (alatPhotoPreviewUrl) URL.revokeObjectURL(alatPhotoPreviewUrl);
+  alatPhotoPreviewUrl = '';
+  alatPhotoRemoved = false;
+  document.getElementById('fa-foto').value = '';
+  document.getElementById('fa-foto-preview').innerHTML = alatPhotoHtml({ fotoUrl }, 'w-20 h-20');
+  document.getElementById('fa-foto-remove').classList.toggle('hidden', !fotoUrl);
+}
+
+function validateAlatPhoto(file) {
+  if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) throw new Error('Format foto harus JPG, PNG, atau WEBP.');
+  if (file.size > 2 * 1024 * 1024) throw new Error('Ukuran foto maksimal 2 MB.');
+}
+
+function previewAlatPhoto(input) {
+  const file = input.files[0];
+  if (!file) { restoreAlatPhoto(); return; }
+  try {
+    validateAlatPhoto(file);
+    if (alatPhotoPreviewUrl) URL.revokeObjectURL(alatPhotoPreviewUrl);
+    alatPhotoPreviewUrl = URL.createObjectURL(file);
+    document.getElementById('fa-foto-preview').innerHTML = alatPhotoHtml({ fotoUrl: alatPhotoPreviewUrl }, 'w-20 h-20');
+    alatPhotoRemoved = false;
+    document.getElementById('fa-foto-remove').classList.remove('hidden');
+  } catch (error) {
+    restoreAlatPhoto();
+    showToast(error.message, 'error');
+  }
+}
+
+function restoreAlatPhoto() {
+  const removed = alatPhotoRemoved;
+  const existing = alatCache[document.getElementById('fa-id').value]?.fotoUrl || '';
+  resetAlatPhoto(removed ? '' : existing);
+  alatPhotoRemoved = removed;
+}
+
+function removeAlatPhoto() {
+  resetAlatPhoto();
+  alatPhotoRemoved = true;
+}
+
+function readAlatPhoto() {
+  const file = document.getElementById('fa-foto').files[0];
+  if (!file) return Promise.resolve('');
+  validateAlatPhoto(file);
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(new Error('Foto gagal dibaca. Pilih ulang file foto.'));
+    reader.readAsDataURL(file);
+  });
 }
 
 function openAlatModal() {
+  resetAlatPhoto();
   document.getElementById('modalAlatTitle').textContent = 'Tambah Alat Baru';
   document.getElementById('fa-id').value        = '';
   document.getElementById('fa-kode').value      = '';
@@ -1142,6 +1263,7 @@ function openAlatModal() {
 function editAlatModal(id) {
   const alat = alatCache[id];
   if (!alat) { showToast('Data alat tidak ditemukan, coba refresh', 'error'); return; }
+  resetAlatPhoto(alat.fotoUrl || '');
   document.getElementById('modalAlatTitle').textContent = 'Edit Alat';
   document.getElementById('fa-id').value        = alat.id;
   document.getElementById('fa-kode').value      = alat.kodeAlat;
@@ -1183,12 +1305,27 @@ document.getElementById('formAlat').addEventListener('submit', async (e) => {
   const btn = document.getElementById('btnSaveAlat');
   btn.disabled = true; btn.innerHTML = '<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Menyimpan...';
 
-  const action = id ? 'updateAlat' : 'addAlat';
-  const res    = await callAPI(action, { data: payload });
-  btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> Simpan';
-
-  if (res.success) { closeModal('modal-alat'); showToast(res.message, 'success'); await loadAlatAdmin(); }
-  else { errTxt.textContent = res.message||'Gagal menyimpan'; errEl.classList.remove('hidden'); }
+  try {
+    const fotoData = await readAlatPhoto();
+    if (fotoData) payload.fotoData = fotoData;
+    else if (alatPhotoRemoved) payload.hapusFoto = true;
+    if (fotoData || payload.hapusFoto) {
+      const support = await callAPI('getAlat');
+      if (!support.success) throw new Error(support.message || 'Dukungan upload foto belum dapat diperiksa. Coba kembali.');
+      if (support.supportsPhotos !== true) throw new Error('Backend aktif belum mendukung foto alat. Perbarui appscript.gs di Google Apps Script, jalankan authorizeDrive(), lalu Deploy > Manage deployments > Edit > New version > Deploy. Setelah itu simpan kembali.');
+    }
+    const action = id ? 'updateAlat' : 'addAlat';
+    const res = await callAPI(action, { data: payload });
+    if (!res.success) throw new Error(res.message || 'Gagal menyimpan');
+    if (res.id && !id) document.getElementById('fa-id').value = res.id;
+    if (fotoData && !res.fotoUrl) throw new Error('Data alat tersimpan, tetapi penyimpanan foto belum terkonfirmasi. Periksa izin Google Drive dan deployment Apps Script, lalu simpan kembali.');
+    if (payload.hapusFoto && res.fotoUrl !== '') throw new Error('Penghapusan foto belum terkonfirmasi. Periksa deployment Apps Script, lalu simpan kembali.');
+    closeModal('modal-alat'); showToast(res.message, 'success'); await loadAlatAdmin();
+  } catch (error) {
+    errTxt.textContent = error.message; errEl.classList.remove('hidden');
+  } finally {
+    btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> Simpan';
+  }
 });
 
 function openHapusModal(id, nama) {
@@ -1223,7 +1360,7 @@ function filterPengguna() {
   const q = document.getElementById('searchPengguna').value.toLowerCase();
   const r = document.getElementById('filterRolePengguna').value;
   renderPenggunaTable(allPengguna.filter(u =>
-    (!q || u.namaLengkap.toLowerCase().includes(q) || u.username.toLowerCase().includes(q) || (u.divisi||'').toLowerCase().includes(q)) &&
+    (!q || u.namaLengkap.toLowerCase().includes(q) || u.username.toLowerCase().includes(q) || (u.divisi||'').toLowerCase().includes(q) || (u.alamat||'').toLowerCase().includes(q) || (u.nik||'').toLowerCase().includes(q)) &&
     (!r || (r === 'pengguna' ? u.role === 'pengguna' || u.role === 'pegawai' : u.role === r))
   ));
 }
@@ -1244,6 +1381,8 @@ function renderPenggunaTable(items) {
       ? '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Aktif</span>'
       : '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-500"><span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span>Nonaktif</span>';
     const avatarBg = isAdmin ? 'background:linear-gradient(135deg,#ef4444,#dc2626)' : 'background:linear-gradient(135deg,#3b82f6,#2563eb)';
+    const idBadge = u.nik ? `<p class="text-[11px] text-gray-500 font-mono">NIK ${escHtml(u.nik)}</p>` : '';
+    const addr = u.alamat ? `<p class="text-[11px] text-gray-500 max-w-[220px] truncate" title="${escHtml(u.alamat)}"><i class="fas fa-map-marker-alt mr-1"></i>${escHtml(u.alamat)}</p>` : '';
     return `
     <tr class="border-b border-gray-50 hover:bg-gray-50/80 transition ${aktif ? '' : 'opacity-60'}">
       <td class="td">
@@ -1252,16 +1391,17 @@ function renderPenggunaTable(items) {
           <div>
             <p class="font-semibold text-gray-900 text-sm">${escHtml(u.namaLengkap)}${isMe ? ' <span class="text-xs text-blue-500 font-normal">(Anda)</span>' : ''}</p>
             <p class="text-xs text-gray-400 font-mono">${escHtml(u.username)}</p>
+            ${idBadge}${addr}
           </div>
         </div>
       </td>
-      <td class="td">${roleBadge}</td>
+      <td class="td">${roleBadge}${u.jenisKelamin?`<p class="text-xs text-gray-400 mt-1">${escHtml(u.jenisKelamin)}${u.tanggalLahir?` · ${escHtml(u.tanggalLahir)}`:''}</p>`:''}</td>
       <td class="td"><p class="text-sm font-medium text-gray-700">${escHtml(u.nip||'—')}</p><p class="text-xs text-gray-400">${escHtml(u.divisi||'—')}</p></td>
       <td class="td"><p class="text-sm text-gray-600">${escHtml(u.email||'—')}</p><p class="text-xs text-gray-400">${escHtml(u.telepon||'—')}</p></td>
       <td class="td">${statusBadgeHtml}</td>
       <td class="td text-xs text-gray-400">${escHtml(u.tanggalDaftar||'—')}</td>
       <td class="td">
-        <div class="flex items-center gap-1.5">
+        <div class="flex items-center gap-1.5 flex-wrap">
           <button onclick="editPenggunaModal('${escHtml(u.id)}')" class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold rounded-lg transition"><i class="fas fa-edit"></i> Edit</button>
           ${u.ktpUrl ? `<a href="${escHtml(u.ktpUrl)}" target="_blank" class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold rounded-lg transition"><i class="fas fa-id-card"></i> KTP</a>` : '<span class="text-xs text-red-500 font-semibold">KTP belum ada</span>'}
           ${isMe ? '' : `<button onclick="openTogglePengguna('${escHtml(u.id)}')" class="inline-flex items-center gap-1 px-2.5 py-1.5 ${aktif ? 'bg-amber-50 hover:bg-amber-100 text-amber-700' : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700'} text-xs font-bold rounded-lg transition"><i class="fas ${aktif ? 'fa-user-slash' : 'fa-user-check'}"></i> ${aktif ? 'Nonaktifkan' : 'Aktifkan'}</button>`}
@@ -1284,6 +1424,10 @@ function openPenggunaModal() {
   document.getElementById('fp-divisi').value   = '';
   document.getElementById('fp-email').value    = '';
   document.getElementById('fp-telepon').value  = '';
+  document.getElementById('fp-nik').value = '';
+  document.getElementById('fp-tgl').value = '';
+  document.getElementById('fp-gender').value = '';
+  document.getElementById('fp-alamat').value = '';
   document.getElementById('fp-ktp').value      = '';
   document.getElementById('fp-ktp-status').textContent = 'Belum ada foto KTP';
   document.getElementById('fp-ktp-preview').classList.add('hidden');
@@ -1309,6 +1453,10 @@ function editPenggunaModal(id) {
   document.getElementById('fp-divisi').value   = u.divisi||'';
   document.getElementById('fp-email').value    = u.email||'';
   document.getElementById('fp-telepon').value  = u.telepon||'';
+  document.getElementById('fp-nik').value = u.nik||'';
+  document.getElementById('fp-tgl').value = u.tanggalLahir||'';
+  document.getElementById('fp-gender').value = u.jenisKelamin||'';
+  document.getElementById('fp-alamat').value = u.alamat||'';
   document.getElementById('fp-ktp').value      = '';
   document.getElementById('fp-ktp-status').textContent = u.ktpUrl ? 'Foto KTP tersimpan. Pilih file baru untuk mengganti.' : 'Belum ada foto KTP';
   document.getElementById('fp-ktp-preview').classList.add('hidden');
@@ -1366,6 +1514,10 @@ document.getElementById('formPengguna').addEventListener('submit', async (e) => 
     divisi:      document.getElementById('fp-divisi').value.trim(),
     email:       document.getElementById('fp-email').value.trim(),
     telepon:     document.getElementById('fp-telepon').value.trim(),
+    nik:         document.getElementById('fp-nik').value.trim(),
+    tanggalLahir: document.getElementById('fp-tgl').value,
+    jenisKelamin: document.getElementById('fp-gender').value,
+    alamat:      document.getElementById('fp-alamat').value.trim(),
     ktpData
   };
 
@@ -1373,6 +1525,7 @@ document.getElementById('formPengguna').addEventListener('submit', async (e) => 
   if (!isEdit && !payload.username) { errTxt.textContent = 'Username wajib diisi'; errEl.classList.remove('hidden'); return; }
   if (!isEdit && (!payload.password || payload.password.length < 4)) { errTxt.textContent = 'Password minimal 4 karakter'; errEl.classList.remove('hidden'); return; }
   if (isEdit && payload.password && payload.password.length < 4) { errTxt.textContent = 'Password baru minimal 4 karakter'; errEl.classList.remove('hidden'); return; }
+  if (payload.nik && !/^\d{16}$/.test(payload.nik)) { errTxt.textContent = 'NIK harus 16 digit'; errEl.classList.remove('hidden'); return; }
   const existingUser = isEdit ? penggunaCache[id] : null;
   if (payload.role !== 'admin' && !payload.ktpData && !existingUser?.ktpUrl) { errTxt.textContent = 'Foto KTP wajib diunggah untuk pengguna'; errEl.classList.remove('hidden'); return; }
 
