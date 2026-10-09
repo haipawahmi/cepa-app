@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title data-brand-title="Dashboard Pengguna">Dashboard Pengguna — Cepa App</title>
+  <title data-brand-title="Dashboard Pengguna">Dashboard Pengguna — CEPA</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -43,12 +43,12 @@
   <!-- Logo -->
   <div class="p-5 border-b border-slate-700/40">
     <div class="flex items-center gap-3">
-      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-lg shadow-blue-900/50 flex-shrink-0">
-        <span data-brand-logo class="text-white"><i class="fas fa-toolbox"></i></span>
+      <div class="w-10 h-10 rounded-xl bg-white text-slate-900 flex items-center justify-center shadow-lg flex-shrink-0">
+        <span data-brand-logo class="text-xs font-black tracking-widest">CEPA</span>
       </div>
       <div class="min-w-0">
-        <p data-brand-name class="font-bold text-white text-base leading-none">Cepa App</p>
-        <p data-brand-tagline class="text-slate-400 text-xs mt-0.5 truncate">Manajemen Peminjaman</p>
+        <p data-brand-name class="font-black text-white text-base leading-none tracking-widest">CEPA</p>
+        <p data-brand-tagline class="text-slate-500 text-[10px] mt-0.5 truncate">Manajemen Peminjaman</p>
       </div>
     </div>
   </div>
@@ -69,7 +69,7 @@
       <div id="sidebarAvatar" class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center flex-shrink-0 text-white text-xs font-bold">U</div>
       <div class="flex-1 min-w-0">
         <p id="sidebarName"   class="text-sm font-semibold text-white truncate">—</p>
-        <p id="sidebarDivisi" class="text-xs text-slate-400 truncate">—</p>
+        <p id="sidebarRole" class="text-xs text-slate-400 font-medium">Pengguna</p>
       </div>
     </div>
     <button onclick="doLogout()" class="nav-item text-slate-400 hover:text-red-400 hover:bg-red-900/20 mt-1">
@@ -90,13 +90,13 @@
         </button>
         <div>
           <h2 id="pageTitle"    class="text-base font-bold text-gray-900 leading-none">Beranda</h2>
-          <p  id="pageSubtitle" class="text-xs text-gray-500 mt-0.5">Selamat datang di Cepa App</p>
+          <p  id="pageSubtitle" class="text-xs text-gray-500 mt-0.5">Selamat datang di CEPA</p>
         </div>
       </div>
       <div class="flex items-center gap-3">
-        <div class="hidden sm:block text-right">
-          <p id="headerName" class="text-sm font-semibold text-gray-800">—</p>
-          <p class="text-xs font-medium text-blue-600">Pengguna</p>
+        <div class="hidden sm:block text-right min-w-0 max-w-[200px]">
+          <p id="headerName" class="text-sm font-semibold text-gray-800 truncate">—</p>
+          <p id="headerRole" class="text-xs font-medium text-gray-500">Pengguna</p>
         </div>
         <div id="headerAvatar" class="w-9 h-9 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">U</div>
       </div>
@@ -167,31 +167,25 @@
       </div>
 
       <!-- Filter bar -->
-      <div class="card p-4 mb-5">
+      <div class="card p-4 mb-5 space-y-3">
         <div class="flex flex-col sm:flex-row gap-3">
           <div class="relative flex-1">
             <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
-            <input type="text" id="searchAlat" placeholder="Cari nama atau kode alat..." oninput="filterAlat()"
-              class="input-field pl-10">
+            <input type="text" id="searchAlat" placeholder="Cari nama atau kode alat..." oninput="filterAlat()" class="input-field pl-10">
           </div>
-          <select id="filterKategori" onchange="filterAlat()" class="input-field sm:w-44 bg-white">
-            <option value="">Semua Kategori</option>
-          </select>
-          <select id="filterKondisi" onchange="filterAlat()" class="input-field sm:w-40 bg-white">
-            <option value="">Semua Kondisi</option>
-            <option value="Baik">Baik</option>
-            <option value="Rusak">Rusak</option>
-            <option value="Sedang Diperbaiki">Sedang Diperbaiki</option>
-          </select>
+          <select id="filterKategori" onchange="filterAlat()" class="input-field sm:w-44 bg-white"><option value="">Semua Kategori</option></select>
+          <select id="filterKondisi" onchange="filterAlat()" class="input-field sm:w-40 bg-white"><option value="">Semua Kondisi</option><option value="Baik">Baik</option><option value="Rusak">Rusak</option><option value="Sedang Diperbaiki">Sedang Diperbaiki</option></select>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <label class="inline-flex items-center gap-2 text-xs font-semibold text-gray-600"><input type="checkbox" id="groupKategoriUser" onchange="filterAlat()" class="rounded"> Kelompokkan kategori</label>
+          <div id="kategoriChipsUser" class="flex flex-wrap gap-2"></div>
         </div>
       </div>
 
       <!-- Summary bar -->
       <div class="flex items-center justify-between mb-4">
         <p id="alatCount" class="text-sm text-gray-500 font-medium">Memuat...</p>
-        <button onclick="loadAlat()" class="text-sm text-blue-600 hover:text-blue-700 font-semibold flex items-center gap-1.5 transition">
-          <i class="fas fa-sync-alt text-xs"></i> Refresh
-        </button>
+        <button onclick="loadAlat()" class="text-sm text-blue-600 hover:text-blue-700 font-semibold flex items-center gap-1.5 transition"><i class="fas fa-sync-alt text-xs"></i> Refresh</button>
       </div>
 
       <!-- Equipment grid -->
@@ -280,16 +274,16 @@
 
     <!-- ============================== PROFIL ============================== -->
     <section id="section-profil" class="hidden">
-      <div class="mb-6"><h3 class="text-2xl font-extrabold text-gray-900">Profil &amp; Jaminan</h3><p class="text-gray-500 text-sm mt-1">Ajukan perubahan foto KTP untuk ditinjau Admin</p></div>
+      <div class="mb-6"><h3 class="text-2xl font-extrabold text-gray-900">Profil &amp; Jaminan</h3><p class="text-gray-500 text-sm mt-1">Kelola identitas lengkap — perubahan dikirim ke Admin untuk persetujuan</p></div>
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <div class="card p-5"><h4 class="font-bold text-gray-900 mb-4">Data Aktif Anda</h4><div class="space-y-3 text-sm"><div><p class="text-xs text-gray-400">Nama</p><p id="profile-name" class="font-semibold text-gray-800">—</p></div><div><p class="text-xs text-gray-400">Username</p><p id="profile-username" class="font-semibold text-gray-800">—</p></div><div><p class="text-xs text-gray-400">Divisi</p><p id="profile-divisi" class="font-semibold text-gray-800">—</p></div><div id="profile-ktp-status" class="p-3 rounded-xl text-xs">Memuat status KTP...</div></div></div>
-        <div class="card p-5"><h4 class="font-bold text-gray-900 mb-4">Ajukan Foto KTP Baru</h4><form id="formProfileChange" class="space-y-4"><input type="file" id="profile-ktp" accept="image/jpeg,image/png,image/webp" class="input-field text-xs" required onchange="previewProfileKtp(this)"><p class="text-xs text-gray-400">JPG, PNG, WEBP maksimal 5 MB. Data lama tetap aktif sampai disetujui Admin.</p><img id="profile-ktp-preview" class="hidden h-32 w-48 object-cover rounded-xl border" alt="Pratinjau KTP"><div id="profile-change-error" class="hidden p-3 bg-red-50 border border-red-200 text-red-800 rounded-xl text-sm"></div><button id="btnProfileChange" class="btn-primary"><i class="fas fa-paper-plane"></i> Ajukan untuk Ditinjau</button></form></div>
+        <div class="card p-5"><h4 class="font-bold text-gray-900 mb-4">Data Aktif Anda</h4><div class="space-y-3 text-sm"><div><p class="text-xs text-gray-400">Nama</p><p id="profile-name" class="font-semibold text-gray-800">—</p></div><div><p class="text-xs text-gray-400">Username</p><p id="profile-username" class="font-semibold text-gray-800">—</p></div><div><p class="text-xs text-gray-400">NIK</p><p id="profile-nik" class="font-semibold text-gray-800">—</p></div><div><p class="text-xs text-gray-400">Alamat</p><p id="profile-alamat" class="font-semibold text-gray-800">—</p></div><div><p class="text-xs text-gray-400">Tanggal Lahir · Jenis Kelamin</p><p id="profile-ttl" class="font-semibold text-gray-800">—</p></div><div><p class="text-xs text-gray-400">Telepon · Email</p><p id="profile-kontak" class="font-semibold text-gray-800">—</p></div><div><p class="text-xs text-gray-400">Divisi</p><p id="profile-divisi" class="font-semibold text-gray-800">—</p></div><div id="profile-ktp-status" class="p-3 rounded-xl text-xs">Memuat status KTP...</div></div></div>
+        <div class="card p-5"><h4 class="font-bold text-gray-900 mb-4">Ajukan Perubahan Identitas</h4><form id="formProfileChange" class="space-y-3"><div class="grid grid-cols-2 gap-3"><div><label class="text-xs font-semibold text-gray-600">NIK</label><input id="profile-nik-input" maxlength="16" class="input-field" placeholder="16 digit"></div><div><label class="text-xs font-semibold text-gray-600">Tanggal Lahir</label><input id="profile-tgl" type="date" class="input-field"></div></div><div><label class="text-xs font-semibold text-gray-600">Jenis Kelamin</label><select id="profile-gender" class="input-field bg-white"><option value="">Pilih</option><option value="Laki-laki">Laki-laki</option><option value="Perempuan">Perempuan</option></select></div><div><label class="text-xs font-semibold text-gray-600">Alamat Lengkap Sekarang</label><textarea id="profile-alamat-input" rows="2" class="input-field resize-none" placeholder="Jalan, RT/RW, desa/kelurahan, kecamatan, kabupaten/kota"></textarea></div><div class="grid grid-cols-2 gap-3"><div><label class="text-xs font-semibold text-gray-600">Telepon</label><input id="profile-telepon" class="input-field" placeholder="08xxxxxxxxxx"></div><div><label class="text-xs font-semibold text-gray-600">Email</label><input id="profile-email" type="email" class="input-field" placeholder="nama@email.com"></div></div><div class="p-3 bg-blue-50 border border-blue-100 rounded-xl"><label class="text-xs font-semibold text-gray-600">Foto KTP (opsional — jika ingin ganti)</label><input type="file" id="profile-ktp" accept="image/jpeg,image/png,image/webp" class="input-field bg-white text-xs mt-1" onchange="previewProfileKtp(this)"><img id="profile-ktp-preview" class="hidden h-32 w-48 object-cover rounded-xl border mt-2" alt="Pratinjau KTP"></div><div id="profile-change-error" class="hidden p-3 bg-red-50 border border-red-200 text-red-800 rounded-xl text-sm"></div><button id="btnProfileChange" class="btn-primary"><i class="fas fa-paper-plane"></i> Ajukan untuk Ditinjau</button></form></div>
       </div>
       <div class="card mt-5 overflow-hidden"><div class="px-5 py-4 border-b border-gray-100"><h4 class="font-bold text-gray-900">Riwayat Pengajuan Perubahan</h4></div><div id="profile-change-list" class="divide-y divide-gray-50"><p class="p-5 text-sm text-gray-400">Memuat...</p></div></div>
     </section>
 
   </main>
-  <footer class="px-6 py-4 text-center text-xs text-gray-400 border-t border-gray-200" data-brand-footer>© 2026 Cepa App · Sistem Informasi Manajemen Peminjaman Alat</footer>
+  <footer class="px-6 py-4 text-center text-xs text-gray-400 border-t border-gray-200 leading-relaxed"><span data-brand-footer>© 2026 CEPA · Sistem Informasi Manajemen Peminjaman Alat</span><span data-store-address class="block mt-1 text-[11px]">Matang Segarau, Kec. Tekarang, Kabupaten Sambas, Kalimantan Barat 79468</span></footer>
 </div>
 
 <!-- ============================== MODAL FORM PEMINJAMAN ============================== -->
@@ -413,24 +407,29 @@ window.addEventListener('load', async () => {
 });
 
 function setupUserUI() {
-  const initial = (currentUser.namaLengkap || currentUser.username)[0].toUpperCase();
+  const displayName = currentUser.namaLengkap?.trim() || currentUser.username || 'Pengguna';
+  const roleLabel = currentUser.role === 'admin' ? 'Administrator' : 'Pengguna';
+  const initial = displayName[0].toUpperCase();
   document.getElementById('sidebarAvatar').textContent = initial;
   document.getElementById('headerAvatar').textContent  = initial;
-  document.getElementById('sidebarName').textContent   = currentUser.namaLengkap || currentUser.username;
-  document.getElementById('sidebarDivisi').textContent = currentUser.divisi || '—';
-  document.getElementById('headerName').textContent    = currentUser.namaLengkap || currentUser.username;
-  document.getElementById('greetName').textContent     = (currentUser.namaLengkap || currentUser.username).split(' ')[0];
+  ['sidebarName', 'headerName'].forEach(id => {
+    document.getElementById(id).textContent = displayName;
+    document.getElementById(id).title = displayName;
+  });
+  document.getElementById('sidebarRole').textContent = roleLabel;
+  document.getElementById('headerRole').textContent = roleLabel;
+  document.getElementById('greetName').textContent = displayName.split(' ')[0];
   document.getElementById('greetDate').textContent     = getCurrentDateIndo();
 }
 
 // ===== NAVIGATION =====
 const navItems = ['beranda','permintaan','status','riwayat','profil'];
 const navTitles = {
-  beranda:    ['Beranda',            'Selamat datang di Cepa App'],
+  beranda:    ['Beranda',            'Selamat datang di CEPA'],
   permintaan: ['Permintaan Pinjam',  'Pilih alat yang tersedia untuk dipinjam'],
   status:     ['Status Peminjaman',  'Pantau status permintaan peminjaman Anda'],
   riwayat:    ['Riwayat Peminjaman', 'Riwayat peminjaman yang telah selesai atau ditolak']
-  ,profil:    ['Profil & Jaminan',   'Kelola pengajuan perubahan identitas']
+  ,profil:    ['Profil & Jaminan',   'Kelola identitas lengkap & pengajuan perubahan']
 };
 
 function showSection(name) {
@@ -443,7 +442,7 @@ function showSection(name) {
   document.getElementById('nav-' + name).classList.add('active');
   document.getElementById('pageTitle').textContent    = navTitles[name][0];
   document.getElementById('pageSubtitle').textContent = navTitles[name][1];
-  if (name === 'permintaan' && allAlat.length === 0) loadAlat();
+  if (name === 'permintaan') loadAlat();
   if (name === 'status')  loadStatusPeminjaman();
   if (name === 'riwayat') loadRiwayat();
   if (name === 'profil') loadProfileSection();
@@ -453,19 +452,46 @@ function showSection(name) {
 async function loadProfileSection() {
   document.getElementById('profile-name').textContent = currentUser.namaLengkap || '—';
   document.getElementById('profile-username').textContent = currentUser.username || '—';
+  document.getElementById('profile-nik').textContent = currentUser.nik || '—';
+  document.getElementById('profile-alamat').textContent = currentUser.alamat || '—';
+  document.getElementById('profile-ttl').textContent = [currentUser.tanggalLahir||'', currentUser.jenisKelamin||''].filter(Boolean).join(' · ') || '—';
+  document.getElementById('profile-kontak').textContent = [currentUser.telepon||'', currentUser.email||''].filter(Boolean).join(' · ') || '—';
   document.getElementById('profile-divisi').textContent = currentUser.divisi || '—';
+  document.getElementById('profile-nik-input').value = currentUser.nik||'';
+  document.getElementById('profile-tgl').value = currentUser.tanggalLahir||'';
+  document.getElementById('profile-gender').value = currentUser.jenisKelamin||'';
+  document.getElementById('profile-alamat-input').value = currentUser.alamat||'';
+  document.getElementById('profile-telepon').value = currentUser.telepon||'';
+  document.getElementById('profile-email').value = currentUser.email||'';
   const status = document.getElementById('profile-ktp-status');
   status.className = `p-3 rounded-xl text-xs ${currentUser.ktpUrl ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'}`;
   status.innerHTML = currentUser.ktpUrl ? '<i class="fas fa-check-circle mr-1"></i>KTP aktif dan telah diverifikasi.' : '<i class="fas fa-exclamation-circle mr-1"></i>KTP belum tersedia.';
   const res = await callAPI('getProfileChanges', { username: currentUser.username });
   const list = document.getElementById('profile-change-list');
   if (!res.success || !res.data.length) { list.innerHTML = '<p class="p-5 text-sm text-gray-400">Belum ada pengajuan perubahan.</p>'; return; }
-  list.innerHTML = res.data.map(row => `<div class="px-5 py-3 flex items-center justify-between gap-3"><div><p class="text-sm font-semibold text-gray-800">${escHtml(row.jenis)} · ${escHtml(row.waktuPengajuan)}</p><p class="text-xs text-gray-400">${escHtml(row.catatanAdmin || 'Menunggu pemeriksaan Admin')}</p></div>${statusBadge(row.status)}</div>`).join('');
+  list.innerHTML = res.data.map(row => {
+    const detail = [row.nik?`NIK ${escHtml(row.nik)}`:'', row.alamat?escHtml(row.alamat):'', row.telepon||row.email?`${escHtml(row.telepon||'')}${row.telepon&&row.email?' · ':''}${escHtml(row.email||'')}`:''].filter(Boolean).join(' · ');
+    return `<div class="px-5 py-3 flex items-center justify-between gap-3"><div><p class="text-sm font-semibold text-gray-800">${escHtml(row.jenis)} · ${escHtml(row.waktuPengajuan)}</p><p class="text-xs text-gray-500">${detail||escHtml(row.catatanAdmin || 'Menunggu pemeriksaan Admin')}</p><p class="text-xs text-gray-400">${escHtml(row.catatanAdmin || 'Menunggu pemeriksaan Admin')}</p></div>${statusBadge(row.status)}</div>`;
+  }).join('');
 }
 
 function previewProfileKtp(input) { const file=input.files?.[0]; if (!file) return; if (file.size > 5*1024*1024) { input.value=''; showToast('Ukuran foto maksimal 5 MB','error'); return; } const preview=document.getElementById('profile-ktp-preview'); preview.src=URL.createObjectURL(file); preview.classList.remove('hidden'); }
 function readProfileKtp() { const file=document.getElementById('profile-ktp').files[0]; if(!file)return Promise.resolve(''); return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(file);}); }
-document.getElementById('formProfileChange').addEventListener('submit', async e => { e.preventDefault(); const error=document.getElementById('profile-change-error'); error.classList.add('hidden'); const btn=document.getElementById('btnProfileChange'); const ktpData=await readProfileKtp(); btn.disabled=true; btn.innerHTML='<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Mengirim...'; const res=await callAPI('submitProfileChange',{data:{username:currentUser.username,ktpData}}); btn.disabled=false; btn.innerHTML='<i class="fas fa-paper-plane"></i> Ajukan untuk Ditinjau'; if(res.success){document.getElementById('profile-ktp').value='';document.getElementById('profile-ktp-preview').classList.add('hidden');showToast(res.message,'success');loadProfileSection();}else{error.textContent=res.message;error.classList.remove('hidden');} });
+document.getElementById('formProfileChange').addEventListener('submit', async e => {
+  e.preventDefault();
+  const error=document.getElementById('profile-change-error'); error.classList.add('hidden');
+  const nik=document.getElementById('profile-nik-input').value.trim();
+  if(nik && !/^\d{16}$/.test(nik)){ error.textContent='NIK harus 16 digit'; error.classList.remove('hidden'); return; }
+  const ktpData=await readProfileKtp();
+  const alamat=document.getElementById('profile-alamat-input').value.trim();
+  const payload={ username: currentUser.username, ktpData, nik, tanggalLahir: document.getElementById('profile-tgl').value, jenisKelamin: document.getElementById('profile-gender').value, alamat, telepon: document.getElementById('profile-telepon').value.trim(), email: document.getElementById('profile-email').value.trim() };
+  if(!ktpData && !nik && !alamat && !payload.tanggalLahir && !payload.jenisKelamin && !payload.telepon && !payload.email){ error.textContent='Isi minimal satu perubahan identitas atau unggah foto KTP'; error.classList.remove('hidden'); return; }
+  const btn=document.getElementById('btnProfileChange'); btn.disabled=true; btn.innerHTML='<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Mengirim...';
+  const res=await callAPI('submitProfileChange',{data:payload});
+  btn.disabled=false; btn.innerHTML='<i class="fas fa-paper-plane"></i> Ajukan untuk Ditinjau';
+  if(res.success){document.getElementById('profile-ktp').value='';document.getElementById('profile-ktp-preview').classList.add('hidden');showToast(res.message,'success');loadProfileSection();}
+  else{error.textContent=res.message;error.classList.remove('hidden');}
+});
 
 function toggleSidebar() {
   document.getElementById('sidebar').classList.toggle('-translate-x-full');
@@ -545,8 +571,9 @@ async function loadAlat() {
     return;
   }
   allAlat = res.data;
-  const kategori = [...new Set(allAlat.map(a => a.kategori).filter(Boolean))];
+  const kategori = [...new Set(allAlat.map(a => a.kategori).filter(Boolean))].sort();
   document.getElementById('filterKategori').innerHTML = '<option value="">Semua Kategori</option>' + kategori.map(k => `<option value="${escHtml(k)}">${escHtml(k)}</option>`).join('');
+  document.getElementById('kategoriChipsUser').innerHTML = kategori.map(k=>`<button onclick="document.getElementById('filterKategori').value='${escHtml(k)}';filterAlat()" class="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-xs font-semibold">${escHtml(k)}</button>`).join('');
   renderAlatGrid(allAlat);
 }
 
@@ -555,10 +582,37 @@ function filterAlat() {
   const k = document.getElementById('filterKategori').value;
   const c = document.getElementById('filterKondisi').value;
   renderAlatGrid(allAlat.filter(a =>
-    (!q || a.namaAlat.toLowerCase().includes(q) || (a.kodeAlat||'').toLowerCase().includes(q)) &&
+    (!q || a.namaAlat.toLowerCase().includes(q) || (a.kodeAlat||'').toLowerCase().includes(q) || (a.kategori||'').toLowerCase().includes(q)) &&
     (!k || a.kategori === k) &&
     (!c || a.kondisi === c)
   ));
+}
+
+function alatCardHtml(a){
+  const habis = parseInt(a.stokTersedia) <= 0 || a.kondisi === 'Rusak' || a.kondisi === 'Sedang Diperbaiki';
+  const rendah = !habis && parseInt(a.stokTersedia) <= 2;
+  const barColor = habis ? 'bg-red-400' : rendah ? 'bg-amber-400' : 'bg-emerald-400';
+  const stokColor = habis ? 'text-red-600' : rendah ? 'text-amber-600' : 'text-emerald-600';
+  const cardData = escHtml(JSON.stringify(a));
+  return `<div class="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:border-blue-200 transition-all duration-200 overflow-hidden group">
+      <div class="h-1.5 ${barColor}"></div>
+      ${alatPhotoHtml(a, 'w-full h-44 !rounded-none !border-0')}
+      <div class="p-5">
+        <div class="flex items-start justify-end mb-3">
+          ${kondisiBadge(a.kondisi)}
+        </div>
+        <h4 class="font-bold text-gray-900 text-sm leading-snug mb-1 line-clamp-2">${escHtml(a.namaAlat)}</h4>
+        <p class="text-xs text-gray-400 mb-4">${escHtml(a.kodeAlat)} &middot; ${escHtml(a.kategori)}</p>
+        <div class="flex items-end justify-between mb-4">
+          <div><p class="text-xs text-gray-500 mb-0.5">Stok Tersedia</p><p class="text-xl font-extrabold ${stokColor}">${a.stokTersedia} <span class="text-xs font-normal text-gray-400">/ ${a.stokTotal}</span></p></div>
+          <div class="text-right"><p class="text-xs text-gray-500 mb-0.5">Lokasi</p><p class="text-xs font-semibold text-gray-700">${escHtml(a.lokasi||'—')}</p></div>
+        </div>
+        ${habis
+          ? `<button disabled class="w-full py-2.5 rounded-xl bg-gray-100 text-gray-400 text-sm font-semibold cursor-not-allowed">${a.kondisi==='Baik'?'Stok Habis':'Tidak Tersedia'}</button>`
+          : `<button onclick='openFormPinjam(${cardData})' class="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold transition-colors flex items-center justify-center gap-2 shadow-sm shadow-blue-200"><i class="fas fa-hand-holding"></i> Pinjam Sekarang</button>`
+        }
+      </div>
+    </div>`;
 }
 
 function renderAlatGrid(items) {
@@ -568,43 +622,16 @@ function renderAlatGrid(items) {
     grid.innerHTML = '<div class="col-span-full text-center py-12 text-gray-400"><i class="fas fa-search text-3xl mb-2 block text-gray-200"></i><p class="text-sm">Tidak ada alat yang sesuai filter</p></div>';
     return;
   }
-  grid.innerHTML = items.map(a => {
-    const habis = parseInt(a.stokTersedia) <= 0 || a.kondisi === 'Rusak' || a.kondisi === 'Sedang Diperbaiki';
-    const rendah = !habis && parseInt(a.stokTersedia) <= 2;
-    const barColor = habis ? 'bg-red-400' : rendah ? 'bg-amber-400' : 'bg-emerald-400';
-    const stokColor = habis ? 'text-red-600' : rendah ? 'text-amber-600' : 'text-emerald-600';
-    const cardData = escHtml(JSON.stringify(a));
-    return `
-    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:border-blue-200 transition-all duration-200 overflow-hidden group">
-      <div class="h-1.5 ${barColor}"></div>
-      <div class="p-5">
-        <div class="flex items-start justify-between mb-3">
-          <div class="w-12 h-12 rounded-xl bg-slate-100 group-hover:bg-blue-50 flex items-center justify-center transition-colors">
-            <i class="fas fa-tools text-slate-500 group-hover:text-blue-600 text-lg transition-colors"></i>
-          </div>
-          ${kondisiBadge(a.kondisi)}
-        </div>
-        <h4 class="font-bold text-gray-900 text-sm leading-snug mb-1 line-clamp-2">${escHtml(a.namaAlat)}</h4>
-        <p class="text-xs text-gray-400 mb-4">${escHtml(a.kodeAlat)} &middot; ${escHtml(a.kategori)}</p>
-        <div class="flex items-end justify-between mb-4">
-          <div>
-            <p class="text-xs text-gray-500 mb-0.5">Stok Tersedia</p>
-            <p class="text-xl font-extrabold ${stokColor}">${a.stokTersedia} <span class="text-xs font-normal text-gray-400">/ ${a.stokTotal}</span></p>
-          </div>
-          <div class="text-right">
-            <p class="text-xs text-gray-500 mb-0.5">Lokasi</p>
-            <p class="text-xs font-semibold text-gray-700">${escHtml(a.lokasi||'—')}</p>
-          </div>
-        </div>
-        ${habis
-          ? `<button disabled class="w-full py-2.5 rounded-xl bg-gray-100 text-gray-400 text-sm font-semibold cursor-not-allowed">${a.kondisi==='Baik'?'Stok Habis':'Tidak Tersedia'}</button>`
-          : `<button onclick='openFormPinjam(${cardData})' class="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold transition-colors flex items-center justify-center gap-2 shadow-sm shadow-blue-200">
-               <i class="fas fa-hand-holding"></i> Pinjam Sekarang
-             </button>`
-        }
-      </div>
-    </div>`;
-  }).join('');
+  const grouped = document.getElementById('groupKategoriUser')?.checked;
+  if (grouped) {
+    const cats = [...new Set(items.map(a=>a.kategori||'Tanpa Kategori'))].sort();
+    grid.innerHTML = cats.map(cat=>{
+      const rows = items.filter(a=>(a.kategori||'Tanpa Kategori')===cat);
+      return `<div class="col-span-full mt-2 mb-1 px-1"><span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 text-white text-xs font-black tracking-widest uppercase">${escHtml(cat)} · ${rows.length} alat</span></div>` + rows.map(alatCardHtml).join('');
+    }).join('');
+    return;
+  }
+  grid.innerHTML = items.map(a => alatCardHtml(a)).join('');
 }
 
 // ===== MODAL PINJAM =====
@@ -630,10 +657,10 @@ function openFormPinjam(alat) {
   const jaminan = document.getElementById('jaminanInfo');
   if (currentUser.ktpUrl) {
     jaminan.className = 'mx-5 mt-3 p-3 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-800 text-xs flex items-start gap-2';
-    jaminan.innerHTML = '<i class="fas fa-check-circle mt-0.5"></i><span>Jaminan identitas terverifikasi. Foto KTP tersimpan pada data pengguna.</span>';
+    jaminan.innerHTML = '<i class="fas fa-check-circle mt-0.5"></i><span>Jaminan identitas terverifikasi (opsional).</span>';
   } else {
-    jaminan.className = 'mx-5 mt-3 p-3 rounded-xl border border-red-200 bg-red-50 text-red-800 text-xs flex items-start gap-2';
-    jaminan.innerHTML = '<i class="fas fa-exclamation-circle mt-0.5"></i><span>Foto KTP belum tersedia. Permintaan tidak dapat dikirim sebelum admin melengkapi jaminan identitas.</span>';
+    jaminan.className = 'mx-5 mt-3 p-3 rounded-xl border border-blue-200 bg-blue-50 text-blue-800 text-xs flex items-start gap-2';
+    jaminan.innerHTML = '<i class="fas fa-info-circle mt-0.5"></i><span>Akun siap digunakan. Foto KTP opsional — dapat dilengkapi di menu Profil & Jaminan.</span>';
   }
   openModal('modal-pinjam');
 }
@@ -651,7 +678,6 @@ document.getElementById('formPinjam').addEventListener('submit', async (e) => {
   const errTxt   = document.getElementById('formErrorText');
 
   errEl.classList.add('hidden');
-  if (!currentUser.ktpUrl) { errTxt.textContent = 'Foto KTP belum tersedia. Hubungi admin untuk melengkapi jaminan identitas.'; errEl.classList.remove('hidden'); return; }
   if (!jumlah || jumlah < 1)    { errTxt.textContent='Jumlah minimal 1 unit'; errEl.classList.remove('hidden'); return; }
   if (jumlah > maxStok)          { errTxt.textContent=`Melebihi stok (maks ${maxStok})`; errEl.classList.remove('hidden'); return; }
   if (!tglPinjam)                { errTxt.textContent='Tanggal pinjam wajib diisi'; errEl.classList.remove('hidden'); return; }
