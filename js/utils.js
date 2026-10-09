@@ -7,11 +7,11 @@ async function callAPI(action, params = {}) {
   try {
     const url = new URL(CONFIG.APPS_SCRIPT_URL);
     const payload = { action, ...params };
-    if (['addUser', 'updateUser', 'toggleUserStatus'].includes(action) && !payload.token) payload.token = Auth.getUser()?.sessionToken || '';
+    if (['addUser', 'updateUser', 'toggleUserStatus', 'updateSettings'].includes(action) && !payload.token) payload.token = Auth.getUser()?.sessionToken || '';
     const encodedSize = JSON.stringify(payload).length;
     let requestUrl = url.toString();
     const requestOptions = { redirect: 'follow' };
-    if (['login', 'requestRegistrationOtp', 'verifyRegistrationOtp', 'getRegistrations', 'reviewRegistration', 'addUser', 'updateUser', 'toggleUserStatus', 'updateSettings', 'addAlat', 'updateAlat'].includes(action) || encodedSize > 1500 || params.data && String(params.data).length > 1000) {
+    if (['login', 'requestRegistrationOtp', 'verifyRegistrationOtp', 'requestPasswordResetOtp', 'resetPasswordWithOtp', 'beginGoogleAuth', 'googleAuth', 'completeGoogleRegistration', 'getRegistrations', 'reviewRegistration', 'addUser', 'updateUser', 'toggleUserStatus', 'updateSettings', 'addAlat', 'updateAlat'].includes(action) || encodedSize > 1500 || params.data && String(params.data).length > 1000) {
       requestOptions.method = 'POST';
       requestOptions.headers = { 'Content-Type': 'text/plain;charset=utf-8' };
       requestOptions.body = JSON.stringify(payload);
