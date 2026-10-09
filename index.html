@@ -3,15 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title data-brand-title="Login">Login — Cepa App</title>
+  <title data-brand-title="Login">Login — CEPA</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter','sans-serif'] } } } }</script>
 </head>
 <body class="min-h-screen font-sans bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 flex items-center justify-center p-4">
 
-  <!-- Background blobs -->
   <div class="pointer-events-none fixed inset-0 overflow-hidden">
     <div class="absolute -top-48 -right-48 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl"></div>
     <div class="absolute -bottom-48 -left-48 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl"></div>
@@ -23,83 +22,99 @@
     <!-- Brand -->
     <div class="text-center mb-8">
       <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 shadow-lg shadow-blue-900/50 mb-4">
-        <span data-brand-logo class="text-white text-2xl"><i class="fas fa-toolbox"></i></span>
+        <span data-brand-logo class="text-white text-xl font-black tracking-widest">CP</span>
       </div>
-      <h1 data-brand-name class="text-3xl font-extrabold text-white tracking-tight">Cepa App</h1>
-      <p data-brand-tagline class="text-blue-300/80 text-sm mt-1 font-medium">Sistem Informasi Manajemen Peminjaman Alat</p>
+      <h1 data-brand-name class="text-3xl font-extrabold text-white tracking-tight">CEPA</h1>
+      <p data-brand-tagline class="text-blue-300/60 text-xs mt-2 font-medium">Sistem Informasi Manajemen Peminjaman Alat</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex bg-white/10 backdrop-blur rounded-xl p-1 mb-4">
+      <button id="tab-login" onclick="switchAuth('login')" class="flex-1 py-2 rounded-lg bg-white text-slate-900 text-sm font-bold shadow">Masuk</button>
+      <button id="tab-register" onclick="switchAuth('register')" class="flex-1 py-2 rounded-lg text-white/80 text-sm font-semibold">Daftar</button>
     </div>
 
     <!-- Login Card -->
-    <div class="bg-white rounded-2xl shadow-2xl shadow-black/40 overflow-hidden">
+    <div id="card-login" class="bg-white rounded-2xl shadow-2xl shadow-black/40 overflow-hidden">
       <div class="h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-blue-600"></div>
       <div class="p-8">
         <h2 class="text-xl font-bold text-gray-900 mb-1">Selamat Datang</h2>
         <p class="text-sm text-gray-500 mb-6">Masukkan kredensial akun Anda untuk melanjutkan</p>
 
-        <!-- Error alert -->
         <div id="errorAlert" class="hidden mb-5 flex items-start gap-3 p-3.5 bg-red-50 border border-red-200 rounded-xl text-sm text-red-800">
           <i class="fas fa-exclamation-circle text-red-500 mt-0.5 flex-shrink-0"></i>
           <span id="errorText">Username atau password salah</span>
         </div>
 
         <form id="loginForm" novalidate>
-          <!-- Username -->
           <div class="mb-4">
             <label for="username" class="block text-sm font-semibold text-gray-700 mb-1.5">Username</label>
             <div class="relative">
-              <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400">
-                <i class="fas fa-user text-sm"></i>
-              </span>
-              <input id="username" type="text" autocomplete="username"
-                class="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition placeholder-gray-400"
-                placeholder="Masukkan username" required>
+              <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400"><i class="fas fa-user text-sm"></i></span>
+              <input id="username" type="text" autocomplete="username" class="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition placeholder-gray-400" placeholder="Masukkan username" required>
             </div>
           </div>
-
-          <!-- Password -->
           <div class="mb-6">
             <label for="password" class="block text-sm font-semibold text-gray-700 mb-1.5">Password</label>
             <div class="relative">
-              <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400">
-                <i class="fas fa-lock text-sm"></i>
-              </span>
-              <input id="password" type="password" autocomplete="current-password"
-                class="w-full pl-10 pr-11 py-2.5 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition placeholder-gray-400"
-                placeholder="Masukkan password" required>
-              <button type="button" onclick="togglePass()" class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-gray-400 hover:text-gray-600">
-                <i id="eyeIcon" class="fas fa-eye text-sm"></i>
-              </button>
+              <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400"><i class="fas fa-lock text-sm"></i></span>
+              <input id="password" type="password" autocomplete="current-password" class="w-full pl-10 pr-11 py-2.5 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition placeholder-gray-400" placeholder="Masukkan password" required>
+              <button type="button" onclick="togglePass()" class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-gray-400 hover:text-gray-600"><i id="eyeIcon" class="fas fa-eye text-sm"></i></button>
             </div>
           </div>
-
-          <!-- Submit -->
-          <button type="submit" id="loginBtn"
-            class="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold rounded-xl shadow-md shadow-blue-200 transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
-            <i class="fas fa-sign-in-alt"></i>
-            Masuk
+          <button type="submit" id="loginBtn" class="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold rounded-xl shadow-md shadow-blue-200 transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
+            <i class="fas fa-sign-in-alt"></i> Masuk
           </button>
+          <p class="text-xs text-center text-gray-500 mt-4">Belum punya akun? <button type="button" onclick="switchAuth('register')" class="text-blue-600 font-bold hover:underline">Daftar sekarang</button></p>
         </form>
       </div>
     </div>
 
-    <!-- Footer -->
-    <p class="text-center text-slate-500 text-xs mt-6">
-      <span data-brand-footer>© 2026 Cepa App · Sistem Informasi Manajemen Peminjaman Alat</span>
-    </p>
+    <!-- Register Card — simplified: hanya username & password -->
+    <div id="card-register" class="hidden bg-white rounded-2xl shadow-2xl shadow-black/40 overflow-hidden">
+      <div class="h-1 bg-gradient-to-r from-emerald-500 via-blue-500 to-indigo-600"></div>
+      <div class="p-8">
+        <h2 class="text-xl font-bold text-gray-900 mb-1">Daftar Akun Baru</h2>
+        <p class="text-sm text-gray-500 mb-6">Buat akun dengan username dan password</p>
+        <div id="regError" class="hidden mb-5 flex items-start gap-3 p-3.5 bg-red-50 border border-red-200 rounded-xl text-sm text-red-800">
+          <i class="fas fa-exclamation-circle text-red-500 mt-0.5 flex-shrink-0"></i><span id="regErrorText">—</span>
+        </div>
+        <form id="registerForm" novalidate class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Username <span class="text-red-500">*</span></label>
+            <input id="reg-username" class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="huruf kecil, angka, titik" required>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Password <span class="text-red-500">*</span></label>
+            <input id="reg-password" type="password" class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Min. 4 karakter" required>
+          </div>
+          <button type="submit" id="regBtn" class="w-full py-3 px-4 bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
+            <i class="fas fa-user-plus"></i> Daftar
+          </button>
+          <p class="text-xs text-center text-gray-500">Sudah punya akun? <button type="button" onclick="switchAuth('login')" class="text-blue-600 font-bold hover:underline">Masuk</button></p>
+        </form>
+      </div>
+    </div>
+
+    <footer class="text-center text-slate-400 text-xs mt-6 leading-relaxed"><span data-brand-footer>© 2026 CEPA · Sistem Informasi Manajemen Peminjaman Alat</span><span data-store-address class="block mt-2">Matang Segarau, Kec. Tekarang, Kabupaten Sambas, Kalimantan Barat 79468</span></footer>
   </div>
 
+  <div id="toast-container" class="fixed top-5 right-5 z-[9999] flex flex-col gap-2 max-w-sm w-full pointer-events-none"></div>
   <script src="js/config.js"></script>
   <script src="js/utils.js"></script>
   <script>
     loadBranding();
-    // Auto-redirect if already logged in
     (function() {
       const u = localStorage.getItem('cepa_user');
-      if (u) {
-        const user = JSON.parse(u);
-        window.location.href = user.role === 'admin' ? 'admin.html' : 'user.html';
-      }
+      if (u) { const user = JSON.parse(u); window.location.href = user.role === 'admin' ? 'admin.html' : 'user.html'; }
     })();
+
+    function switchAuth(mode){
+      document.getElementById('card-login').classList.toggle('hidden', mode!=='login');
+      document.getElementById('card-register').classList.toggle('hidden', mode!=='register');
+      document.getElementById('tab-login').className = mode==='login' ? 'flex-1 py-2 rounded-lg bg-white text-slate-900 text-sm font-bold shadow' : 'flex-1 py-2 rounded-lg text-white/80 text-sm font-semibold';
+      document.getElementById('tab-register').className = mode==='register' ? 'flex-1 py-2 rounded-lg bg-white text-slate-900 text-sm font-bold shadow' : 'flex-1 py-2 rounded-lg text-white/80 text-sm font-semibold';
+    }
 
     function togglePass() {
       const pwd = document.getElementById('password');
@@ -108,11 +123,7 @@
       else { pwd.type = 'password'; icon.classList.replace('fa-eye-slash','fa-eye'); }
     }
 
-    function fillDemo(u, p) {
-      document.getElementById('username').value = u;
-      document.getElementById('password').value = p;
-      document.getElementById('loginForm').dispatchEvent(new Event('submit'));
-    }
+
 
     document.getElementById('loginForm').addEventListener('submit', async function(e) {
       e.preventDefault();
@@ -120,22 +131,17 @@
       const password = document.getElementById('password').value;
       const btn = document.getElementById('loginBtn');
       const alert = document.getElementById('errorAlert');
-
       alert.classList.add('hidden');
       btn.disabled = true;
       btn.innerHTML = '<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Memverifikasi...';
-
       try {
         const url = `${CONFIG.APPS_SCRIPT_URL}?action=login&u=${encodeURIComponent(username)}&p=${encodeURIComponent(password)}`;
         const res  = await fetch(url, { redirect: 'follow' });
         const data = await res.json();
-
         if (data.success) {
           localStorage.setItem('cepa_user', JSON.stringify(data.user));
           btn.innerHTML = '<i class="fas fa-check"></i> Berhasil!';
-          setTimeout(() => {
-            window.location.href = data.user.role === 'admin' ? 'admin.html' : 'user.html';
-          }, 400);
+          setTimeout(() => { window.location.href = data.user.role === 'admin' ? 'admin.html' : 'user.html'; }, 400);
         } else {
           document.getElementById('errorText').textContent = data.message || 'Username atau password salah';
           alert.classList.remove('hidden');
@@ -148,6 +154,20 @@
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Masuk';
       }
+    });
+
+    document.getElementById('registerForm').addEventListener('submit', async e=>{
+      e.preventDefault();
+      const err=document.getElementById('regError'); const errTxt=document.getElementById('regErrorText'); err.classList.add('hidden');
+      const username = document.getElementById('reg-username').value.trim().toLowerCase();
+      const password = document.getElementById('reg-password').value;
+      if(!username || !password){ errTxt.textContent='Username dan password wajib diisi'; err.classList.remove('hidden'); return; }
+      const payload={ username, password };
+      const btn=document.getElementById('regBtn'); btn.disabled=true; btn.innerHTML='<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Mendaftarkan...';
+      const res=await callAPI('register',{data:payload});
+      btn.disabled=false; btn.innerHTML='<i class="fas fa-user-plus"></i> Daftar';
+      if(res.success){ showToast('Pendaftaran berhasil. Silakan masuk.','success'); document.getElementById('registerForm').reset(); switchAuth('login'); document.getElementById('username').value=payload.username; }
+      else { errTxt.textContent=res.message||'Gagal mendaftar'; err.classList.remove('hidden'); }
     });
   </script>
 </body>
