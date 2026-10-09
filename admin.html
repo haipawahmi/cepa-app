@@ -357,6 +357,21 @@
               <div><label class="block text-sm font-semibold text-gray-700 mb-1.5">Status</label><div class="p-3 bg-blue-50 border border-blue-100 rounded-xl text-xs text-blue-800"><i class="fas fa-info-circle mr-1"></i>Perubahan diterapkan setelah halaman dimuat ulang.</div></div>
             </div>
             <div id="formPengaturanError" class="hidden p-3 bg-red-50 border border-red-200 rounded-xl text-red-800 text-sm"></div>
+            <div id="settingsSessionAlert" class="hidden p-4 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-900" role="alert">
+              <p class="font-semibold mb-1"><i class="fas fa-user-clock mr-2" aria-hidden="true"></i>Sesi Admin Perlu Diperbarui</p>
+              <p id="settingsSessionText" class="leading-relaxed mb-3">Masuk ulang untuk melanjutkan. Pengaturan yang Anda isi disimpan sementara pada tab ini.</p>
+              <button type="button" id="settingsRelogin" onclick="Auth.logout()" class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-600 text-white text-xs font-bold"><i class="fas fa-sign-in-alt" aria-hidden="true"></i>Masuk Ulang</button>
+            </div>
+            <p id="settingsDraftNotice" class="hidden text-sm text-amber-800" role="status">Pengaturan sebelumnya dipulihkan dan belum disimpan. Periksa nilainya, lalu pilih Simpan Pengaturan. Jika sebelumnya memilih file logo, pilih kembali file tersebut.</p>
+            <fieldset class="border-t border-gray-200 pt-5 space-y-4">
+              <legend class="text-sm font-bold text-gray-900">Autentikasi Google</legend>
+              <div><label for="set-googleClientId" class="block text-sm font-semibold text-gray-700 mb-1.5">OAuth Web Client ID</label><input id="set-googleClientId" type="text" maxlength="300" autocomplete="off" spellcheck="false" class="input-field" placeholder="123456-abc.apps.googleusercontent.com"></div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <label class="flex items-center gap-3 text-sm text-gray-700"><input id="set-googleLoginEnabled" type="checkbox" class="w-4 h-4 accent-blue-600">Aktifkan login Google</label>
+                <label class="flex items-center gap-3 text-sm text-gray-700"><input id="set-googleRegistrationEnabled" type="checkbox" class="w-4 h-4 accent-blue-600">Aktifkan pendaftaran Google</label>
+              </div>
+              <div class="flex flex-wrap justify-between gap-2 text-xs"><p id="google-settings-status" class="text-gray-500" role="status"></p><a href="setup.html#google-auth" target="_blank" rel="noopener" class="font-semibold text-blue-600 hover:underline"><i class="fas fa-external-link-alt mr-1" aria-hidden="true"></i>Panduan konfigurasi Google</a></div>
+            </fieldset>
             <button type="submit" id="btnSavePengaturan" class="btn-primary"><i class="fas fa-save"></i> Simpan Pengaturan</button>
           </form>
         </div>
@@ -386,7 +401,7 @@
           <p class="text-xs text-gray-500">Email terverifikasi</p>
           <select id="registrationFilter" aria-label="Status pendaftaran" onchange="renderRegistrations()" class="input-field bg-white !w-auto text-xs"><option value="Menunggu">Menunggu</option><option value="Disetujui">Disetujui</option><option value="Ditolak">Ditolak</option><option value="all">Semua Status</option></select>
         </div>
-        <div class="card overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-sm"><thead><tr class="bg-gray-50 border-b border-gray-100"><th class="th">Username</th><th class="th">Email</th><th class="th">Terverifikasi</th><th class="th">Status</th><th class="th">Aksi / Catatan</th></tr></thead><tbody id="registrationsBody"></tbody></table></div></div>
+        <div class="card overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-sm"><thead><tr class="bg-gray-50 border-b border-gray-100"><th class="th">Pendaftar</th><th class="th">Kontak</th><th class="th">Terverifikasi</th><th class="th">Status</th><th class="th">Aksi / Catatan</th></tr></thead><tbody id="registrationsBody"></tbody></table></div></div>
       </div>
       <div id="approval-profiles" role="tabpanel" aria-labelledby="approvalTabProfiles" class="hidden">
         <div class="card overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-sm"><thead><tr class="bg-gray-50 border-b border-gray-100"><th class="th">ID</th><th class="th">Pengguna</th><th class="th">Jenis</th><th class="th">Diajukan</th><th class="th">Status</th><th class="th">Aksi</th></tr></thead><tbody id="profileChangesBody"></tbody></table></div></div>
@@ -771,7 +786,7 @@
     <div class="px-6 py-4 border-b border-gray-100"><h3 id="registrationReviewTitle" class="font-bold text-gray-900">Tinjau Pendaftaran</h3></div>
     <form id="registrationReviewForm" class="p-6 space-y-4">
       <input id="registrationReviewId" type="hidden"><input id="registrationReviewStatus" type="hidden">
-      <div><p id="registrationReviewUsername" class="font-semibold text-gray-900 break-all"></p><p id="registrationReviewEmail" class="text-sm text-gray-500 break-all mt-1"></p></div>
+      <div><p id="registrationReviewName" class="font-semibold text-gray-900 break-words"></p><p id="registrationReviewUsername" class="text-xs text-gray-500 break-all mt-1"></p><p id="registrationReviewEmail" class="text-sm text-gray-500 break-all mt-2"></p><p id="registrationReviewPhone" class="text-sm text-gray-500 mt-1"></p></div>
       <p id="registrationReviewInfo" class="text-sm text-gray-600"></p>
       <div id="registrationReasonGroup" class="hidden"><label for="registrationReviewNote" class="block text-sm font-semibold text-gray-700 mb-2">Alasan Penolakan <span class="text-red-500">*</span></label><textarea id="registrationReviewNote" maxlength="500" rows="3" class="input-field resize-none"></textarea></div>
       <p id="registrationReviewError" class="hidden p-3 rounded-lg bg-red-50 text-red-800 text-sm" role="alert"></p>
@@ -892,7 +907,7 @@ async function loadRegistrationsAdmin() {
 function renderRegistrations() {
   const filter = document.getElementById('registrationFilter').value;
   const rows = allRegistrations.filter(row => filter === 'all' || row.status === filter);
-  document.getElementById('registrationsBody').innerHTML = rows.length ? rows.map(row => `<tr class="border-b border-gray-50"><td class="td font-semibold text-gray-900">${escHtml(row.username)}</td><td class="td text-gray-600">${escHtml(row.email)}</td><td class="td text-xs text-gray-500 whitespace-nowrap">${escHtml(row.waktuVerifikasi)}</td><td class="td">${statusBadge(row.status)}</td><td class="td">${row.status === 'Menunggu' ? `<div class="flex gap-2"><button onclick="openRegistrationReview('${escHtml(row.id)}','Disetujui')" class="btn-success"><i class="fas fa-check"></i> Setujui</button><button onclick="openRegistrationReview('${escHtml(row.id)}','Ditolak')" class="btn-danger"><i class="fas fa-times"></i> Tolak</button></div>` : `<p class="text-xs text-gray-500">${escHtml(row.catatanAdmin || '-')}</p><p class="text-xs text-gray-400 mt-1">${escHtml(row.adminUsername || '')}</p>`}</td></tr>`).join('') : '<tr><td colspan="5" class="text-center py-10 text-gray-400 text-sm">Tidak ada pendaftaran pada status ini.</td></tr>';
+  document.getElementById('registrationsBody').innerHTML = rows.length ? rows.map(row => `<tr class="border-b border-gray-50"><td class="td"><p class="font-semibold text-gray-900 break-words">${escHtml(row.namaLengkap || row.username)}</p><p class="text-xs text-gray-500 mt-1">${escHtml(row.username)}</p></td><td class="td text-gray-600"><p class="break-all">${escHtml(row.email)}</p><p class="text-xs text-gray-500 mt-1">${escHtml(row.telepon || '-')}</p></td><td class="td text-xs text-gray-500 whitespace-nowrap">${escHtml(row.waktuVerifikasi)}</td><td class="td">${statusBadge(row.status)}</td><td class="td">${row.status === 'Menunggu' ? `<div class="flex gap-2"><button onclick="openRegistrationReview('${escHtml(row.id)}','Disetujui')" class="btn-success"><i class="fas fa-check"></i> Setujui</button><button onclick="openRegistrationReview('${escHtml(row.id)}','Ditolak')" class="btn-danger"><i class="fas fa-times"></i> Tolak</button></div>` : `<p class="text-xs text-gray-500">${escHtml(row.catatanAdmin || '-')}</p><p class="text-xs text-gray-400 mt-1">${escHtml(row.adminUsername || '')}</p>`}</td></tr>`).join('') : '<tr><td colspan="5" class="text-center py-10 text-gray-400 text-sm">Tidak ada pendaftaran pada status ini.</td></tr>';
 }
 
 function openRegistrationReview(id, status) {
@@ -902,8 +917,10 @@ function openRegistrationReview(id, status) {
   document.getElementById('registrationReviewId').value = id;
   document.getElementById('registrationReviewStatus').value = status;
   document.getElementById('registrationReviewTitle').textContent = reject ? 'Tolak Pendaftaran' : 'Setujui Pendaftaran';
-  document.getElementById('registrationReviewUsername').textContent = row.username;
+  document.getElementById('registrationReviewName').textContent = row.namaLengkap || row.username;
+  document.getElementById('registrationReviewUsername').textContent = 'Username: ' + row.username;
   document.getElementById('registrationReviewEmail').textContent = row.email;
+  document.getElementById('registrationReviewPhone').textContent = 'Nomor HP: ' + (row.telepon || '-');
   document.getElementById('registrationReviewInfo').textContent = reject ? 'Pendaftaran tidak akan dibuat menjadi akun pengguna.' : 'Akun pengguna akan dibuat dan dapat masuk setelah disetujui.';
   document.getElementById('registrationReasonGroup').classList.toggle('hidden', !reject);
   document.getElementById('registrationReviewNote').value = '';
@@ -952,9 +969,36 @@ async function loadProfileChangesAdmin() {
 }
 async function reviewProfile(id,status){const catatan=status==='Ditolak'?prompt('Alasan penolakan:')||'Ditolak oleh Admin':'';const res=await callAPI('reviewProfileChange',{id,status,catatan,admin:currentUser.namaLengkap});if(res.success){showToast(res.message,'success');loadProfileChangesAdmin();loadPengguna();}else showToast(res.message||'Gagal memproses','error');}
 
+function readSettingsDraft() {
+  try {
+    const draft = JSON.parse(sessionStorage.getItem('cepa_settings_draft') || 'null');
+    if (draft?.username !== currentUser?.username || draft?.apiUrl !== CONFIG.APPS_SCRIPT_URL || !draft.data || typeof draft.data !== 'object') return null;
+    return draft.data;
+  } catch (error) { return null; }
+}
+
+function showSettingsSessionExpired(payload) {
+  const data = { ...payload };
+  delete data.logoData;
+  let saved = false;
+  try {
+    sessionStorage.setItem('cepa_settings_draft', JSON.stringify({ username: currentUser.username, apiUrl: CONFIG.APPS_SCRIPT_URL, data }));
+    saved = true;
+  } catch (error) {}
+  document.getElementById('formPengaturanError').classList.add('hidden');
+  document.getElementById('settingsDraftNotice').classList.add('hidden');
+  document.getElementById('settingsSessionText').textContent = saved ? 'Sesi admin tidak tersedia atau sudah kedaluwarsa. Masuk ulang untuk melanjutkan; pengaturan yang Anda isi akan dipulihkan pada tab ini.' : 'Sesi admin tidak tersedia atau sudah kedaluwarsa. Penyimpanan sementara browser tidak tersedia; catat pengaturan Anda sebelum masuk ulang.';
+  document.getElementById('settingsSessionAlert').classList.remove('hidden');
+  document.getElementById('google-settings-status').textContent = 'Belum disimpan';
+}
+
 function fillSettingsForm(settings = {}) {
-  const values = { appName:'CEPA', tagline:'Sistem Informasi Manajemen Peminjaman Alat', company:'Toko CEPA', footer:'© 2026 CEPA · Sistem Informasi Manajemen Peminjaman Alat', storeAddress:CONFIG.STORE_ADDRESS, logoMode:'text', logoIcon:'fa-store', primaryColor:'#2563eb', ...settings };
-  ['appName','tagline','company','footer','storeAddress','logoIcon'].forEach(key => { const el = document.getElementById('set-'+key); if (el) el.value = values[key] || ''; });
+  const draft = readSettingsDraft();
+  const values = { appName:'CEPA', tagline:'Sistem Informasi Manajemen Peminjaman Alat', company:'Toko CEPA', footer:'© 2026 CEPA · Sistem Informasi Manajemen Peminjaman Alat', storeAddress:CONFIG.STORE_ADDRESS, logoMode:'text', logoIcon:'fa-store', primaryColor:'#2563eb', ...settings, ...(draft || {}) };
+  document.getElementById('settingsDraftNotice').classList.toggle('hidden', !draft);
+  ['appName','tagline','company','footer','storeAddress','logoIcon','googleClientId'].forEach(key => { const el = document.getElementById('set-'+key); if (el) el.value = values[key] || ''; });
+  ['googleLoginEnabled', 'googleRegistrationEnabled'].forEach(key => { document.getElementById('set-' + key).checked = String(values[key]) === 'true'; });
+  document.getElementById('google-settings-status').textContent = draft ? 'Belum disimpan' : !values.googleClientId ? 'Belum dikonfigurasi' : 'Login ' + (String(values.googleLoginEnabled) === 'true' ? 'aktif' : 'nonaktif') + ' · Pendaftaran ' + (String(values.googleRegistrationEnabled) === 'true' ? 'aktif' : 'nonaktif');
   const color = values.primaryColor || '#2563eb';
   document.getElementById('set-primaryColor').value = color;
   document.getElementById('set-primaryColorText').value = color;
@@ -994,15 +1038,26 @@ function readBrandLogo() {
 document.getElementById('formPengaturan').addEventListener('submit', async e => {
   e.preventDefault();
   const error = document.getElementById('formPengaturanError'); error.classList.add('hidden');
+  document.getElementById('settingsSessionAlert').classList.add('hidden');
   const btn = document.getElementById('btnSavePengaturan');
   try {
     const logoData = await readBrandLogo();
-    const payload = { appName:document.getElementById('set-appName').value.trim(), tagline:document.getElementById('set-tagline').value.trim(), company:document.getElementById('set-company').value.trim(), footer:document.getElementById('set-footer').value.trim(), storeAddress:document.getElementById('set-storeAddress').value.trim(), logoMode:document.querySelector('input[name="logoMode"]:checked').value, logoIcon:document.getElementById('set-logoIcon').value.trim(), primaryColor:document.getElementById('set-primaryColorText').value.trim(), ...(logoData ? {logoData} : {}) };
+    const payload = { appName:document.getElementById('set-appName').value.trim(), tagline:document.getElementById('set-tagline').value.trim(), company:document.getElementById('set-company').value.trim(), footer:document.getElementById('set-footer').value.trim(), storeAddress:document.getElementById('set-storeAddress').value.trim(), logoMode:document.querySelector('input[name="logoMode"]:checked').value, logoIcon:document.getElementById('set-logoIcon').value.trim(), primaryColor:document.getElementById('set-primaryColorText').value.trim(), googleClientId:document.getElementById('set-googleClientId').value.trim(), googleLoginEnabled:document.getElementById('set-googleLoginEnabled').checked, googleRegistrationEnabled:document.getElementById('set-googleRegistrationEnabled').checked, ...(logoData ? {logoData} : {}) };
     if (!payload.appName) throw new Error('Nama aplikasi wajib diisi');
+    if ((payload.googleLoginEnabled || payload.googleRegistrationEnabled) && !payload.googleClientId) throw new Error('Isi OAuth Web Client ID sebelum mengaktifkan Google.');
+    const token = Auth.getUser()?.sessionToken || currentUser?.sessionToken || '';
+    if (!token) { showSettingsSessionExpired(payload); return; }
     btn.disabled = true; btn.innerHTML = '<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Menyimpan...';
-    const result = await callAPI('updateSettings', { data:payload });
+    const result = await callAPI('updateSettings', { data:payload, token });
+    if (!result.success && (result.code === 'AUTH_SESSION_EXPIRED' || /Sesi administrator tidak valid atau kedaluwarsa/i.test(result.message || ''))) {
+      showSettingsSessionExpired(payload);
+      btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> Simpan Pengaturan';
+      return;
+    }
     if (!result.success) throw new Error(result.message || 'Gagal menyimpan pengaturan');
     if (result.data?.storeAddress !== payload.storeAddress) throw new Error('Alamat belum tersimpan. Perbarui deployment Apps Script ke versi terbaru, lalu simpan kembali.');
+    if (String(result.data?.googleClientId || '') !== payload.googleClientId || ['googleLoginEnabled', 'googleRegistrationEnabled'].some(key => (String(result.data?.[key]) === 'true') !== payload[key])) throw new Error('Pengaturan Google belum tersimpan. Perbarui deployment Apps Script ke versi terbaru.');
+    sessionStorage.removeItem('cepa_settings_draft');
     currentBranding = result.data; applyBranding(currentBranding); fillSettingsForm(currentBranding); showToast('Pengaturan tampilan berhasil disimpan', 'success');
   } catch (err) { error.textContent = err.message; error.classList.remove('hidden'); }
   btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> Simpan Pengaturan';
