@@ -10,7 +10,7 @@ async function callAPI(action, params = {}) {
     const encodedSize = JSON.stringify(payload).length;
     let requestUrl = url.toString();
     const requestOptions = { redirect: 'follow' };
-    if (encodedSize > 1500 || params.data && String(params.data).length > 1000) {
+    if (['updateSettings', 'addAlat', 'updateAlat'].includes(action) || encodedSize > 1500 || params.data && String(params.data).length > 1000) {
       requestOptions.method = 'POST';
       requestOptions.headers = { 'Content-Type': 'text/plain;charset=utf-8' };
       requestOptions.body = JSON.stringify(payload);
@@ -42,6 +42,7 @@ function applyBranding(settings = {}) {
   const company = settings.company || CONFIG.COMPANY;
   const footer = settings.footer || `© 2026 ${name} · ${company}`;
   const color = settings.primaryColor || '#2563eb';
+  const storeAddress = settings.storeAddress || CONFIG.STORE_ADDRESS || '';
   document.documentElement.style.setProperty('--brand-primary', color);
   let brandStyle = document.getElementById('brand-style');
   if (!brandStyle) { brandStyle = document.createElement('style'); brandStyle.id = 'brand-style'; document.head.appendChild(brandStyle); }
@@ -50,16 +51,25 @@ function applyBranding(settings = {}) {
   document.querySelectorAll('[data-brand-tagline]').forEach(el => { el.textContent = tagline; });
   document.querySelectorAll('[data-brand-company]').forEach(el => { el.textContent = company; });
   document.querySelectorAll('[data-brand-footer]').forEach(el => { el.textContent = footer; });
+  document.querySelectorAll('[data-store-address]').forEach(el => { el.textContent = storeAddress; el.style.display = storeAddress ? 'block' : 'none'; });
   document.querySelectorAll('[data-brand-logo]').forEach(el => {
     if (settings.logoMode === 'image' && settings.logoData) {
       el.innerHTML = `<img src="${escHtml(settings.logoData)}" alt="${escHtml(name)}" class="w-full h-full object-contain rounded-lg">`;
     } else if (settings.logoMode === 'text') {
-      el.textContent = (name || 'A').slice(0, 2).toUpperCase();
+      const short = /cepa/i.test(name) ? 'CP' : (name.length <= 4 ? name.toUpperCase() : name.slice(0, 2).toUpperCase());
+      el.textContent = short;
+      el.classList.add('font-black','tracking-widest','text-xs');
     } else {
       el.innerHTML = `<i class="fas ${escHtml(settings.logoIcon || 'fa-toolbox')}"></i>`;
     }
   });
   document.querySelectorAll('title[data-brand-title]').forEach(el => { el.textContent = `${el.dataset.brandTitle} — ${name}`; });
+}
+
+function alatPhotoHtml(alat, sizeClass = 'w-14 h-14') {
+  const url = String(alat.fotoUrl || '');
+  const safeUrl = /^https:\/\//.test(url) || /^blob:/.test(url) ? url : '';
+  return `<span class="relative block ${sizeClass} shrink-0 overflow-hidden rounded-lg border border-gray-200 bg-gray-50"><span class="absolute inset-0 flex items-center justify-center text-gray-400" role="img" aria-label="Belum ada foto" aria-hidden="${safeUrl ? 'true' : 'false'}"><i class="fas fa-image text-xl" aria-hidden="true"></i></span>${safeUrl ? `<img src="${escHtml(safeUrl)}" alt="${escHtml(alat.namaAlat || 'Foto alat')}" class="relative w-full h-full object-contain bg-white" loading="lazy" onerror="this.previousElementSibling.removeAttribute('aria-hidden');this.remove()">` : ''}</span>`;
 }
 
 // ===== AUTH HELPERS =====
