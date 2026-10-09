@@ -8,6 +8,9 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter','sans-serif'] } } } }</script>
+  <style>
+    #otpDialog::backdrop { background: rgba(0,0,0,.6); backdrop-filter: blur(4px); }
+  </style>
 </head>
 <body class="min-h-screen font-sans bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 flex items-center justify-center p-4">
 
@@ -75,24 +78,33 @@
       <div class="h-1 bg-gradient-to-r from-emerald-500 via-blue-500 to-indigo-600"></div>
       <div class="p-8">
         <h2 class="text-xl font-bold text-gray-900 mb-1">Daftar Akun Baru</h2>
-        <p class="text-sm text-gray-500 mb-6">Buat akun dengan username dan password</p>
+        <p class="text-sm text-gray-500 mb-6">Daftar dengan email Anda</p>
         <div id="regError" class="hidden mb-5 flex items-start gap-3 p-3.5 bg-red-50 border border-red-200 rounded-xl text-sm text-red-800">
           <i class="fas fa-exclamation-circle text-red-500 mt-0.5 flex-shrink-0"></i><span id="regErrorText">—</span>
         </div>
         <form id="registerForm" novalidate class="space-y-4">
           <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Username <span class="text-red-500">*</span></label>
-            <input id="reg-username" class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="huruf kecil, angka, titik" required>
+            <label for="reg-email" class="block text-sm font-semibold text-gray-700 mb-1.5">Email <span class="text-red-500">*</span></label>
+            <input id="reg-email" type="email" autocomplete="email" maxlength="254" class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="guest123@gmail.com" required>
+            <p class="mt-2 text-xs text-gray-500">Username: <output id="reg-username" for="reg-email" class="font-semibold text-gray-700">-</output></p>
           </div>
           <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Password <span class="text-red-500">*</span></label>
-            <input id="reg-password" type="password" class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Min. 4 karakter" required>
+            <label for="reg-password" class="block text-sm font-semibold text-gray-700 mb-1.5">Password <span class="text-red-500">*</span></label>
+            <input id="reg-password" type="password" autocomplete="new-password" minlength="8" maxlength="128" class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Min. 8 karakter" required>
           </div>
           <button type="submit" id="regBtn" class="w-full py-3 px-4 bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
             <i class="fas fa-user-plus"></i> Daftar
           </button>
           <p class="text-xs text-center text-gray-500">Sudah punya akun? <button type="button" onclick="switchAuth('login')" class="text-blue-600 font-bold hover:underline">Masuk</button></p>
         </form>
+        <div id="regSuccess" class="hidden text-center" role="status" aria-live="polite">
+          <i class="fas fa-user-clock text-blue-600 text-3xl mb-3" aria-hidden="true"></i>
+          <h3 class="font-bold text-gray-900 mb-2">Menunggu Persetujuan</h3>
+          <p class="text-sm text-gray-500 leading-relaxed">Email terverifikasi. Administrator akan meninjau pendaftaran Anda. Keputusan akan dikirim ke email Anda.</p>
+          <p class="text-sm text-gray-600 mt-3">Username: <strong id="reg-success-username"></strong></p>
+          <button type="button" onclick="switchAuth('login')" class="w-full mt-5 py-2.5 rounded-lg bg-blue-600 text-white text-sm font-bold"><i class="fas fa-sign-in-alt mr-2"></i>Masuk</button>
+          <button type="button" onclick="resetRegistration()" class="mt-3 text-xs font-semibold text-gray-500 hover:text-blue-600">Daftar akun lain</button>
+        </div>
       </div>
     </div>
 
@@ -100,6 +112,23 @@
   </div>
 
   <div id="toast-container" class="fixed top-5 right-5 z-[9999] flex flex-col gap-2 max-w-sm w-full pointer-events-none"></div>
+  <dialog id="otpDialog" aria-labelledby="otpTitle" class="w-[calc(100%-2rem)] max-w-sm p-0 rounded-lg shadow-2xl bg-white text-gray-900">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+      <h2 id="otpTitle" class="text-base font-bold">Verifikasi Email</h2>
+      <button type="button" id="otpClose" onclick="closeOtpDialog()" class="w-8 h-8 rounded-lg text-gray-400 hover:bg-gray-100" title="Tutup verifikasi" aria-label="Tutup verifikasi"><i class="fas fa-times"></i></button>
+    </div>
+    <form id="otpForm" class="p-6 space-y-4">
+      <p class="text-sm text-gray-500 leading-relaxed">Kode dikirim ke <strong id="otpEmail" class="text-gray-700 break-all"></strong></p>
+      <div>
+        <label for="otpCode" class="block text-sm font-semibold text-gray-700 mb-2">Kode OTP</label>
+        <input id="otpCode" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required class="w-full py-3 text-center text-2xl font-mono border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="000000">
+        <p id="otpExpiry" class="text-xs text-gray-500 text-center mt-2" aria-live="off"></p>
+      </div>
+      <p id="otpError" class="hidden p-3 bg-red-50 border border-red-200 rounded-lg text-red-800 text-sm" role="alert"></p>
+      <button type="submit" id="otpVerify" class="w-full py-3 rounded-lg bg-blue-600 text-white text-sm font-bold disabled:opacity-60"><i class="fas fa-check mr-2"></i>Verifikasi</button>
+      <button type="button" id="otpResend" onclick="sendRegistrationOtp(true)" class="w-full py-2 text-sm font-semibold text-blue-600 disabled:text-gray-400"><i class="fas fa-rotate-right mr-2"></i>Kirim ulang</button>
+    </form>
+  </dialog>
   <script src="js/config.js"></script>
   <script src="js/utils.js"></script>
   <script>
@@ -135,10 +164,8 @@
       btn.disabled = true;
       btn.innerHTML = '<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Memverifikasi...';
       try {
-        const url = `${CONFIG.APPS_SCRIPT_URL}?action=login&u=${encodeURIComponent(username)}&p=${encodeURIComponent(password)}`;
-        const res  = await fetch(url, { redirect: 'follow' });
-        const data = await res.json();
-        if (data.success) {
+        const data = await callAPI('login', { u: username, p: password });
+        if (data.success && data.user?.username && data.user?.role) {
           localStorage.setItem('cepa_user', JSON.stringify(data.user));
           btn.innerHTML = '<i class="fas fa-check"></i> Berhasil!';
           setTimeout(() => { window.location.href = data.user.role === 'admin' ? 'admin.html' : 'user.html'; }, 400);
@@ -156,18 +183,114 @@
       }
     });
 
-    document.getElementById('registerForm').addEventListener('submit', async e=>{
-      e.preventDefault();
-      const err=document.getElementById('regError'); const errTxt=document.getElementById('regErrorText'); err.classList.add('hidden');
-      const username = document.getElementById('reg-username').value.trim().toLowerCase();
+    let pendingRegistration = null;
+    let otpTimer = null;
+    let registrationBusy = false;
+
+    function updateOtpState() {
+      if (!pendingRegistration) return;
+      const remaining = Math.max(0, Math.ceil((pendingRegistration.expiresAt - Date.now()) / 1000));
+      const wait = Math.max(0, Math.ceil((pendingRegistration.resendAt - Date.now()) / 1000));
+      document.getElementById('otpExpiry').textContent = remaining ? `Kode berlaku ${Math.floor(remaining / 60)}:${String(remaining % 60).padStart(2, '0')}` : 'Kode kedaluwarsa. Minta kode baru.';
+      document.getElementById('otpVerify').disabled = registrationBusy || remaining === 0;
+      document.getElementById('otpResend').disabled = registrationBusy || wait > 0;
+      document.getElementById('otpResend').innerHTML = `<i class="fas fa-rotate-right mr-2"></i>${wait ? `Kirim ulang (${wait}s)` : 'Kirim ulang'}`;
+      document.getElementById('otpClose').disabled = registrationBusy;
+    }
+
+    function openOtpDialog() {
+      document.getElementById('otpEmail').textContent = pendingRegistration.email;
+      document.getElementById('otpCode').value = '';
+      document.getElementById('otpError').classList.add('hidden');
+      const dialog = document.getElementById('otpDialog');
+      if (!dialog.open) dialog.showModal();
+      clearInterval(otpTimer);
+      otpTimer = setInterval(updateOtpState, 1000);
+      updateOtpState();
+      document.getElementById('otpCode').focus();
+    }
+
+    function closeOtpDialog() {
+      if (!registrationBusy) document.getElementById('otpDialog').close();
+    }
+
+    document.getElementById('otpDialog').addEventListener('close', () => clearInterval(otpTimer));
+    document.getElementById('otpDialog').addEventListener('cancel', event => { if (registrationBusy) event.preventDefault(); });
+    document.getElementById('reg-email').addEventListener('input', event => {
+      document.getElementById('reg-username').textContent = event.target.value.trim().toLowerCase().split('@')[0] || '-';
+      pendingRegistration = null;
+    });
+    document.getElementById('reg-password').addEventListener('input', () => { pendingRegistration = null; });
+
+    async function sendRegistrationOtp(resend = false) {
+      if (registrationBusy) return;
+      const emailInput = document.getElementById('reg-email');
+      const email = emailInput.value.trim().toLowerCase();
       const password = document.getElementById('reg-password').value;
-      if(!username || !password){ errTxt.textContent='Username dan password wajib diisi'; err.classList.remove('hidden'); return; }
-      const payload={ username, password };
-      const btn=document.getElementById('regBtn'); btn.disabled=true; btn.innerHTML='<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Mendaftarkan...';
-      const res=await callAPI('register',{data:payload});
-      btn.disabled=false; btn.innerHTML='<i class="fas fa-user-plus"></i> Daftar';
-      if(res.success){ showToast('Pendaftaran berhasil. Silakan masuk.','success'); document.getElementById('registerForm').reset(); switchAuth('login'); document.getElementById('username').value=payload.username; }
-      else { errTxt.textContent=res.message||'Gagal mendaftar'; err.classList.remove('hidden'); }
+      const error = document.getElementById(resend ? 'otpError' : 'regErrorText');
+      const errorBox = document.getElementById(resend ? 'otpError' : 'regError');
+      errorBox.classList.add('hidden');
+      if (!email || !emailInput.validity.valid || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { error.textContent = 'Masukkan alamat email yang valid.'; errorBox.classList.remove('hidden'); return; }
+      if (password.length < 8 || password.length > 128) { error.textContent = 'Password harus 8 sampai 128 karakter.'; errorBox.classList.remove('hidden'); return; }
+      if (!resend && pendingRegistration?.email === email && pendingRegistration.expiresAt > Date.now()) { openOtpDialog(); return; }
+      const button = document.getElementById('regBtn');
+      registrationBusy = true; button.disabled = true;
+      emailInput.disabled = true;
+      document.getElementById('reg-password').disabled = true;
+      button.innerHTML = '<i class="fas fa-spinner animate-spin"></i> Mengirim OTP...';
+      updateOtpState();
+      try {
+        const result = await callAPI('requestRegistrationOtp', { data: { email, password } });
+        if (!result.success) throw new Error(result.message || 'Kode gagal dikirim. Coba kembali.');
+        if (!result.requestId || !result.expiresAt) throw new Error('Backend belum mendukung OTP. Perbarui deployment Apps Script.');
+        pendingRegistration = { ...result, resendAt: Date.now() + (result.resendAfter || 60) * 1000 };
+        openOtpDialog();
+        if (resend) showToast('Kode baru telah dikirim.', 'success');
+      } catch (err) { error.textContent = err.message; errorBox.classList.remove('hidden'); }
+      finally {
+        registrationBusy = false; button.disabled = false;
+        emailInput.disabled = false;
+        document.getElementById('reg-password').disabled = false;
+        button.innerHTML = '<i class="fas fa-user-plus"></i> Daftar';
+        updateOtpState();
+      }
+    }
+
+    function resetRegistration() {
+      pendingRegistration = null;
+      document.getElementById('registerForm').reset();
+      document.getElementById('registerForm').classList.remove('hidden');
+      document.getElementById('regSuccess').classList.add('hidden');
+      document.getElementById('regError').classList.add('hidden');
+      document.getElementById('reg-username').textContent = '-';
+    }
+
+    document.getElementById('registerForm').addEventListener('submit', event => { event.preventDefault(); sendRegistrationOtp(); });
+    document.getElementById('otpForm').addEventListener('submit', async event => {
+      event.preventDefault();
+      if (registrationBusy || !pendingRegistration) return;
+      const code = document.getElementById('otpCode').value.trim();
+      const error = document.getElementById('otpError'); error.classList.add('hidden');
+      if (!/^\d{6}$/.test(code)) { error.textContent = 'Masukkan kode OTP 6 digit.'; error.classList.remove('hidden'); return; }
+      registrationBusy = true;
+      const button = document.getElementById('otpVerify');
+      button.innerHTML = '<i class="fas fa-spinner animate-spin mr-2"></i>Memverifikasi...';
+      updateOtpState();
+      try {
+        const result = await callAPI('verifyRegistrationOtp', { data: { requestId: pendingRegistration.requestId, code } });
+        if (!result.success) throw new Error(result.message || 'Verifikasi gagal. Coba kembali.');
+        document.getElementById('otpDialog').close();
+        document.getElementById('reg-success-username').textContent = result.username || pendingRegistration.username;
+        document.getElementById('registerForm').reset();
+        document.getElementById('registerForm').classList.add('hidden');
+        document.getElementById('regSuccess').classList.remove('hidden');
+        pendingRegistration = null;
+      } catch (err) { error.textContent = err.message; error.classList.remove('hidden'); }
+      finally {
+        registrationBusy = false;
+        button.innerHTML = '<i class="fas fa-check mr-2"></i>Verifikasi';
+        updateOtpState();
+      }
     });
   </script>
 </body>
